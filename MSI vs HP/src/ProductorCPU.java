@@ -3,6 +3,7 @@ public class ProductorCPU extends Worker {
         super(almacen, tiempoProduccion, salarioPorHora);
     }
 
+    
     @Override
     protected void producir() {
         try {
