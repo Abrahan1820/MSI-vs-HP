@@ -58,6 +58,12 @@ public class Warehouse {
         System.out.println("Fuente de alimentación almacenada. Total fuentes de alimentación: " + cantidadFuenteAlimentacion);
         notifyAll();
     }
+    
+    public synchronized void almacenarComputadoraTerminada(String tipoComputadora) {
+    // No hay límite para almacenar computadoras
+    System.out.println("Se ha almacenado una computadora terminada: " + tipoComputadora);
+}
+
 
     public synchronized void retirarProductos(int cantidadCPU, int cantidadRAM, int cantidadPlacaBase, int cantidadFuenteAlimentacion) throws InterruptedException {
         while (this.cantidadCPU < cantidadCPU || this.cantidadRAM < cantidadRAM || this.cantidadPlacaBase < cantidadPlacaBase || this.cantidadFuenteAlimentacion < cantidadFuenteAlimentacion) {
