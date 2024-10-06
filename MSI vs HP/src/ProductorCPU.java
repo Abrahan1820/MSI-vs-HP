@@ -4,6 +4,7 @@ public class ProductorCPU extends Worker {
     }
 
     
+    
     @Override
     protected void producir() {
         try {
