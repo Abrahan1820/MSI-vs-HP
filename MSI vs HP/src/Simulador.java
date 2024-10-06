@@ -1,15 +1,19 @@
 public class Simulador {
 
     public static void main(String[] args) {
-        Warehouse almacen = new Warehouse(20, 55);  // Almacén con capacidad máxima de 20 CPUs y 55 RAMs
+        Warehouse almacen = new Warehouse(20, 55, 15, 35);  // Almacén con capacidad máxima de 20 CPUs, 55 RAMs, 15 placas base, y 35 fuentes de alimentación
 
-        // Crear dos productores
-        ProductorCPU productorCPU = new ProductorCPU(almacen, 1000, 26.0); // 20 dólares por hora
-        ProductorRAM productorRAM = new ProductorRAM(almacen, 1000, 40.0); // 22 dólares por hora
+        // Crear productores
+        ProductorCPU productorCPU = new ProductorCPU(almacen, 72 * 1000, 26.0); // Produce cada 72 horas, salario por hora: 26.0
+        ProductorRAM productorRAM = new ProductorRAM(almacen, 24 * 1000, 40.0); // Produce cada 24 horas, salario por hora: 40.0
+        ProductorPlacaBase productorPlacaBase = new ProductorPlacaBase(almacen, 72 * 1000, 20.0); // Produce cada 72 horas, salario por hora: 20.0
+        ProductorFuenteAlimentacion productorFuenteAlimentacion = new ProductorFuenteAlimentacion(almacen, (24 / 3) * 1000, 16.0); // Produce cada 8 horas (3 por día), salario por hora: 16.0
 
         // Iniciar los hilos de los productores
         productorCPU.start();
         productorRAM.start();
+        productorPlacaBase.start();
+        productorFuenteAlimentacion.start();
 
         // Simular por un periodo de tiempo
         try {
@@ -19,7 +23,9 @@ public class Simulador {
         }
 
         // Imprimir el salario total acumulado de los productores
-        System.out.println("Salario total Productor CPU1: " + productorCPU.getSalarioTotal());
-        System.out.println("Salario total Productor RAM1: " + productorRAM.getSalarioTotal());
+        System.out.println("Salario total Productor CPU: " + productorCPU.getSalarioTotal());
+        System.out.println("Salario total Productor RAM: " + productorRAM.getSalarioTotal());
+        System.out.println("Salario total Productor Placa Base: " + productorPlacaBase.getSalarioTotal());
+        System.out.println("Salario total Productor Fuente Alimentación: " + productorFuenteAlimentacion.getSalarioTotal());
     }
 }

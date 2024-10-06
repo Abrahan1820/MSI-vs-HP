@@ -7,7 +7,7 @@ public class ProductorRAM extends Worker {
     protected void producir() {
         try {
             almacen.almacenarRAM();
-            System.out.println("Productor de RAM ha producido una RAM. Salario por hora: " + salarioPorHora);
+            System.out.println("Productor de RAM ha producido una RAM. Salario total: " + salarioTotal);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

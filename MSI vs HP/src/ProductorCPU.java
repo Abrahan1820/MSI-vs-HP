@@ -3,13 +3,11 @@ public class ProductorCPU extends Worker {
         super(almacen, tiempoProduccion, salarioPorHora);
     }
 
-    
-    
     @Override
     protected void producir() {
         try {
             almacen.almacenarCPU();
-            System.out.println("Productor de CPU ha producido una CPU. Salario por hora: " + salarioPorHora);
+            System.out.println("Productor de CPU ha producido una CPU. Salario total: " + salarioTotal);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
