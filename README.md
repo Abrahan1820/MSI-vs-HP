@@ -8,7 +8,7 @@ Este proyecto forma parte del curso Sistemas Operativos para el trimestre 2524-1
 
 <ul>
 	<li>@Abrahan1820</li>
-	<li>Usuario de Guillermo</li>
+	<li>@GuilleSanfuentes</li>
 </ul>
 
 <h2>Problematica</h2>
