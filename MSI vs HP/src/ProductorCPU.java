@@ -1,14 +1,13 @@
 public class ProductorCPU extends Worker {
-
-    public ProductorCPU(Warehouse almacen, int tiempoProduccion) {
-        super(almacen, tiempoProduccion);
+    public ProductorCPU(Warehouse almacen, int tiempoProduccion, double salarioPorHora) {
+        super(almacen, tiempoProduccion, salarioPorHora);
     }
 
     @Override
-    public void producir() {
+    protected void producir() {
         try {
-            almacen.almacenarCPU();  // Añade una CPU al almacén
-            System.out.println("CPU producida.");
+            almacen.almacenarCPU();
+            System.out.println("Productor de CPU ha producido una CPU. Salario por hora: " + salarioPorHora);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

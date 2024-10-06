@@ -1,14 +1,13 @@
 public class ProductorRAM extends Worker {
-
-    public ProductorRAM(Warehouse almacen, int tiempoProduccion) {
-        super(almacen, tiempoProduccion);
+    public ProductorRAM(Warehouse almacen, int tiempoProduccion, double salarioPorHora) {
+        super(almacen, tiempoProduccion, salarioPorHora);
     }
 
     @Override
-    public void producir() {
+    protected void producir() {
         try {
-            almacen.almacenarRAM();  // Añade una RAM al almacén
-            System.out.println("RAM producida.");
+            almacen.almacenarRAM();
+            System.out.println("Productor de RAM ha producido una RAM. Salario por hora: " + salarioPorHora);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
