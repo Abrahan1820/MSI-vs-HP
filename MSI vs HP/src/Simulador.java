@@ -21,6 +21,10 @@ public class Simulador {
         ensambladorHP.start();
         ensambladorMSI.start();
 
+        MainFrame frame1 = new MainFrame();
+        frame1.setLocationRelativeTo(null);
+        frame1.setVisible(true);
+        
         // Simular por un periodo de tiempo
         try {
             Thread.sleep(10000); // Simular por 10 segundos (ajustar según sea necesario)

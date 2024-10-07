@@ -77,4 +77,8 @@ public class Warehouse {
         System.out.println("Se han retirado " + cantidadCPU + " CPUs, " + cantidadRAM + " RAMs, " + cantidadPlacaBase + " placas base y " + cantidadFuenteAlimentacion + " fuentes de alimentación del almacén.");
         notifyAll();
     }
+    
+    public int getRAM() {
+        return this.cantidadRAM; 
+    }
 }
