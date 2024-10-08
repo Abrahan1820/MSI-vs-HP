@@ -23,33 +23,23 @@ public abstract class Worker extends Thread {
         return salarioTotal;
     }
 
-    // Método que ejecutará cada productor
     @Override
     public void run() {
         while (true) {
             try {
-                // Simular una hora trabajada
                 Thread.sleep(1000); // Simular una hora (1 segundo real)
-
-                // Incrementar el contador de horas trabajadas
                 horasTrabajadas++;
-
-                // Acumular salario por cada hora trabajada
                 acumularSalario();
-                System.out.println("Salario por hora: " + salarioPorHora + ", Salario total: " + salarioTotal + " Horas trabajadas: " + horasTrabajadas);
 
-                // Verificar si es hora de producir (según el tiempo de producción definido)
-                if (horasTrabajadas >= tiempoProduccion / 1000) { // Dividir entre 1000 para convertir milisegundos a horas simuladas
+                if (horasTrabajadas >= tiempoProduccion / 1000) { // Verificar si es hora de producir
                     producir();
-                    horasTrabajadas = 0; // Reiniciar el contador de horas trabajadas
+                    horasTrabajadas = 0;
                 }
-
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    // Método abstracto que implementarán las subclases ProductorCPU y ProductorRAM
     protected abstract void producir();
 }

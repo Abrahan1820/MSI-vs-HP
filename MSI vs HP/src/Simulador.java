@@ -1,5 +1,4 @@
 public class Simulador {
-
     public static void main(String[] args) {
         Warehouse almacen = new Warehouse(20, 55, 15, 35);  // Almacén con capacidad máxima de 20 CPUs, 55 RAMs, 15 placas base, y 35 fuentes de alimentación
 
@@ -11,7 +10,7 @@ public class Simulador {
 
         // Crear ensambladores (HP y MSI)
         Ensamblador ensambladorHP = new Ensamblador(almacen, "HP");
-        Ensamblador ensambladorMSI = new Ensamblador(almacen, "MSI");
+       
 
         // Iniciar los hilos de los productores y ensambladores
         productorCPU.start();
@@ -19,14 +18,16 @@ public class Simulador {
         productorPlacaBase.start();
         productorFuenteAlimentacion.start();
         ensambladorHP.start();
-        ensambladorMSI.start();
 
         // Simular por un periodo de tiempo
         try {
-            Thread.sleep(10000); // Simular por 10 segundos (ajustar según sea necesario)
+            Thread.sleep(60000); // Simular por 10 segundos (ajustar según sea necesario)
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        // Mostrar los recursos actuales en el almacén
+        almacen.mostrarRecursos();
 
         // Imprimir el salario total acumulado de los productores y ensambladores
         System.out.println("Salario total Productor CPU: " + productorCPU.getSalarioTotal());
@@ -34,6 +35,5 @@ public class Simulador {
         System.out.println("Salario total Productor Placa Base: " + productorPlacaBase.getSalarioTotal());
         System.out.println("Salario total Productor Fuente Alimentación: " + productorFuenteAlimentacion.getSalarioTotal());
         System.out.println("Salario total Ensamblador HP: " + ensambladorHP.getSalarioTotal());
-        System.out.println("Salario total Ensamblador MSI: " + ensambladorMSI.getSalarioTotal());
     }
 }
