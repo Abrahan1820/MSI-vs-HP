@@ -5,32 +5,38 @@ public class Warehouse {
     private int capacidadMaximaRAM;
     private int capacidadMaximaPlacaBase;
     private int capacidadMaximaFuenteAlimentacion;
+    private int capacidadMaximaGPU;
     private int cantidadCPU;
     private int cantidadRAM;
     private int cantidadPlacaBase;
     private int cantidadFuenteAlimentacion;
+    private int cantidadGPU;
 
     // Semáforos para cada componente
     private Semaphore semaforoCPU;
     private Semaphore semaforoRAM;
     private Semaphore semaforoPlacaBase;
     private Semaphore semaforoFuenteAlimentacion;
+    private Semaphore semaforoGPU;
 
     public Warehouse(int capacidadMaximaCPU, int capacidadMaximaRAM, int capacidadMaximaPlacaBase, int capacidadMaximaFuenteAlimentacion) {
         this.capacidadMaximaCPU = capacidadMaximaCPU;
         this.capacidadMaximaRAM = capacidadMaximaRAM;
         this.capacidadMaximaPlacaBase = capacidadMaximaPlacaBase;
         this.capacidadMaximaFuenteAlimentacion = capacidadMaximaFuenteAlimentacion;
-        this.cantidadCPU = 323;
-        this.cantidadRAM = 547;
-        this.cantidadPlacaBase = 12;
-        this.cantidadFuenteAlimentacion = 34;
+        this.capacidadMaximaGPU = 10;
+        this.cantidadCPU = 0;
+        this.cantidadRAM = 0;
+        this.cantidadPlacaBase = 0;
+        this.cantidadFuenteAlimentacion = 0;
+        this.cantidadGPU = 0;
 
         // Inicializar los semáforos
         this.semaforoCPU = new Semaphore(capacidadMaximaCPU);
         this.semaforoRAM = new Semaphore(capacidadMaximaRAM);
         this.semaforoPlacaBase = new Semaphore(capacidadMaximaPlacaBase);
         this.semaforoFuenteAlimentacion = new Semaphore(capacidadMaximaFuenteAlimentacion);
+        this.semaforoGPU = new Semaphore(capacidadMaximaGPU);
     }
 
     public void almacenarCPU() throws InterruptedException {
@@ -64,26 +70,39 @@ public class Warehouse {
             System.out.println("Fuente de alimentación almacenada. Total fuentes de alimentación: " + cantidadFuenteAlimentacion);
         }
     }
+    
+    public void almacenarGPU() throws InterruptedException {
+        semaforoGPU.acquire();
+        synchronized (this) {
+            cantidadGPU++;
+            System.out.println("GPU almacenado. Total GPUs: " + cantidadGPU);
+        }
+    }
 
     // Método actualizado para retirar productos sin que quede en negativo
-    public synchronized boolean retirarProductos(int cantidadCPU, int cantidadRAM, int cantidadPlacaBase, int cantidadFuenteAlimentacion) throws InterruptedException {
+    public synchronized boolean retirarProductos(int cantidadCPU, int cantidadRAM, int cantidadPlacaBase, int cantidadFuenteAlimentacion, int cantidadGPU) throws InterruptedException {
         // Verificar que haya suficiente stock de todos los productos
         if (this.cantidadCPU >= cantidadCPU && this.cantidadRAM >= cantidadRAM &&
-            this.cantidadPlacaBase >= cantidadPlacaBase && this.cantidadFuenteAlimentacion >= cantidadFuenteAlimentacion) {
+            this.cantidadPlacaBase >= cantidadPlacaBase && this.cantidadFuenteAlimentacion >= cantidadFuenteAlimentacion && this.cantidadGPU >= cantidadGPU) {
 
             // Adquirir permisos de los semáforos para retirar los productos
             semaforoCPU.release(cantidadCPU);
             semaforoRAM.release(cantidadRAM);
             semaforoPlacaBase.release(cantidadPlacaBase);
             semaforoFuenteAlimentacion.release(cantidadFuenteAlimentacion);
+            semaforoGPU.release(cantidadGPU);
 
             // Actualizar las cantidades de los productos
             this.cantidadCPU -= cantidadCPU;
             this.cantidadRAM -= cantidadRAM;
             this.cantidadPlacaBase -= cantidadPlacaBase;
             this.cantidadFuenteAlimentacion -= cantidadFuenteAlimentacion;
-
-            System.out.println("Se han retirado " + cantidadCPU + " CPUs, " + cantidadRAM + " RAMs, " + cantidadPlacaBase + " placas base y " + cantidadFuenteAlimentacion + " fuentes de alimentación del almacén.");
+            this.cantidadGPU -= cantidadGPU;
+            if (cantidadGPU != 0) {
+                System.out.println("Se han retirado " + cantidadCPU + " CPUs, " + cantidadRAM + " RAMs, " + cantidadPlacaBase + " placas base, " + cantidadFuenteAlimentacion + " fuentes de alimentación y " + cantidadGPU + " GPUs del almacén.");
+            } else {
+                System.out.println("Se han retirado " + cantidadCPU + " CPUs, " + cantidadRAM + " RAMs, " + cantidadPlacaBase + " placas base y " + cantidadFuenteAlimentacion + " fuentes de alimentación del almacén.");
+            };
             return true;
         } else {
             // Si no hay suficiente stock, no se realiza la operación
@@ -92,8 +111,8 @@ public class Warehouse {
         }
     }
     
-    public boolean haySuficientesProductos(int cpus, int rams, int placasBase, int fuentes) {
-    return this.cantidadCPU >= cpus && this.cantidadRAM >= rams && this.cantidadPlacaBase >= placasBase && this.cantidadFuenteAlimentacion >= fuentes;
+    public boolean haySuficientesProductos(int cpus, int rams, int placasBase, int fuentes, int gpus) {
+    return this.cantidadCPU >= cpus && this.cantidadRAM >= rams && this.cantidadPlacaBase >= placasBase && this.cantidadFuenteAlimentacion >= fuentes && this.cantidadGPU >= gpus;
 }
 
 

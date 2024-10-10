@@ -3,10 +3,11 @@ public class Simulador {
         Warehouse almacen = new Warehouse(20, 55, 15, 35);  // Almacén con capacidad máxima de 20 CPUs, 55 RAMs, 15 placas base, y 35 fuentes de alimentación
 
         // Crear productores
-        ProductorCPU productorCPU = new ProductorCPU(almacen, 72 * 1000, 26.0); // Produce cada 72 horas, salario por hora: 26.0
-        ProductorRAM productorRAM = new ProductorRAM(almacen, 24 * 1000, 40.0); // Produce cada 24 horas, salario por hora: 40.0
-        ProductorPlacaBase productorPlacaBase = new ProductorPlacaBase(almacen, 72 * 1000, 20.0); // Produce cada 72 horas, salario por hora: 20.0
-        ProductorFuenteAlimentacion productorFuenteAlimentacion = new ProductorFuenteAlimentacion(almacen, (24 / 3) * 1000, 16.0); // Produce cada 8 horas (3 por día), salario por hora: 16.0
+        ProductorCPU productorCPU = new ProductorCPU(almacen, 72 * 1000, 26.0); // Produce 1 cada 72 horas, salario por hora: 26.0
+        ProductorRAM productorRAM = new ProductorRAM(almacen, 12 * 1000, 40.0); // Produce 1 cada 12 horas, salario por hora: 40.0
+        ProductorPlacaBase productorPlacaBase = new ProductorPlacaBase(almacen, 72 * 1000, 20.0); // Produce 1 cada 72 horas, salario por hora: 20.0
+        ProductorFuenteAlimentacion productorFuenteAlimentacion = new ProductorFuenteAlimentacion(almacen, (24 / 3) * 1000, 16.0); // Produce 1 cada 8 horas (3 por día), salario por hora: 16.0
+        ProductorGPU productorGPU = new ProductorGPU(almacen, 72 * 1000, 34.0); // Produce 1 cada 3 díaS, salario por hora: 34.0
 
         // Crear ensambladores (HP y MSI)
         Ensamblador ensambladorHP = new Ensamblador(almacen, "HP");
@@ -17,6 +18,7 @@ public class Simulador {
         productorRAM.start();
         productorPlacaBase.start();
         productorFuenteAlimentacion.start();
+        productorGPU.start();
         ensambladorHP.start();
 
         // Simular por un periodo de tiempo

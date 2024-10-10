@@ -17,6 +17,14 @@ public class MainFrame extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         Warehouse almacenHP = new Warehouse(20,55,25,35);
         Warehouse almacenMSI = new Warehouse(20,55,25,35);
+        actualizarData(almacenHP, almacenMSI);
+        
+        
+        
+    }
+    
+    
+    public void actualizarData(Warehouse almacenHP, Warehouse almacenMSI){
         //HP
         tieneRAMHP.setText(almacenHP.getRAM());
         tieneCPUHP.setText(almacenHP.getCPU());

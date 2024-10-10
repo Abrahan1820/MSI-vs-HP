@@ -16,14 +16,14 @@ protected void producir() {
         while (true) { // Reintenta indefinidamente hasta que pueda ensamblar
              System.out.println("Ensamblador revisando que haya recursos suficientes..."); 
             if (compania.equalsIgnoreCase("HP")) {
-                if (almacen.haySuficientesProductos(1, 2, 1, 4)) {
+                if (almacen.haySuficientesProductos(1, 2, 1, 4, 0)) {
                     ensamblarHP();
                     break; // Sal del bucle una vez que se ensambla correctamente
                 } else {
                     System.out.println("Esperando recursos para ensamblar HP...");
                 }
             } else if (compania.equalsIgnoreCase("MSI")) {
-                if (almacen.haySuficientesProductos(3, 4, 2, 6)) {
+                if (almacen.haySuficientesProductos(3, 4, 2, 6, 0)) {
                     ensamblarMSI();
                     break; // Sal del bucle una vez que se ensambla correctamente
                 } else {
@@ -47,7 +47,7 @@ protected void producir() {
     }
 
     private void ensamblarMSI() throws InterruptedException {
-        // MSI: Cada 7 computadoras, la séptima es con tarjeta gráfica
+        // MSI: Cada 6 computadoras, la séptima es con tarjeta gráfica
         if (computadorasEnsambladas % 7 == 6) {
             ensamblarComputadoraConTarjetaGraficaMSI();
         } else {
@@ -57,8 +57,8 @@ protected void producir() {
 
     private void ensamblarComputadoraEstandarHP() throws InterruptedException {
         // Requerimientos de HP para una computadora estándar
-        if (almacen.haySuficientesProductos(1, 2, 1, 4)) {
-            almacen.retirarProductos(1, 2, 1, 4); // 1 CPU, 2 RAMs, 1 Placa Base, 4 Fuentes de Alimentación
+        if (almacen.haySuficientesProductos(1, 2, 1, 4, 0)) {
+            almacen.retirarProductos(1, 2, 1, 4, 0); // 1 CPU, 2 RAMs, 1 Placa Base, 4 Fuentes de Alimentación
             computadorasEnsambladas++;
             System.out.println("Computadora estándar HP ensamblada. Ganancia: $90K");
         } else {
@@ -68,8 +68,8 @@ protected void producir() {
 
     private void ensamblarComputadoraConTarjetaGraficaHP() throws InterruptedException {
         // Computadora con tarjeta gráfica de HP después de 2 estándar
-        if (almacen.haySuficientesProductos(1, 2, 1, 4)) {
-            almacen.retirarProductos(1, 2, 1, 4); // Requiere 1 CPU, 2 RAMs, 1 Placa Base, 4 Fuentes de Alimentación
+        if (almacen.haySuficientesProductos(1, 2, 1, 4, 3)) {
+            almacen.retirarProductos(1, 2, 1, 4, 3); // Requiere 1 CPU, 2 RAMs, 1 Placa Base, 4 Fuentes de Alimentación
             System.out.println("Computadora con tarjeta gráfica HP ensamblada. Ganancia: $140K");
             computadorasEnsambladas++;
         } else {
@@ -79,8 +79,8 @@ protected void producir() {
 
     private void ensamblarComputadoraEstandarMSI() throws InterruptedException {
         // Requerimientos de MSI para una computadora estándar
-        if (almacen.haySuficientesProductos(3, 4, 2, 6)) {
-            almacen.retirarProductos(3, 4, 2, 6); // 3 CPUs, 4 RAMs, 2 Placas Base, 6 Fuentes de Alimentación
+        if (almacen.haySuficientesProductos(3, 4, 2, 6, 0)) {
+            almacen.retirarProductos(3, 4, 2, 6, 0); // 3 CPUs, 4 RAMs, 2 Placas Base, 6 Fuentes de Alimentación
             computadorasEnsambladas++;
             System.out.println("Computadora estándar MSI ensamblada. Ganancia: $180K");
         } else {
@@ -90,8 +90,8 @@ protected void producir() {
 
     private void ensamblarComputadoraConTarjetaGraficaMSI() throws InterruptedException {
         // Computadora con tarjeta gráfica de MSI después de 6 estándar
-        if (almacen.haySuficientesProductos(3, 4, 2, 6)) {
-            almacen.retirarProductos(3, 4, 2, 6); // Requiere 3 CPUs, 4 RAMs, 2 Placas Base, 6 Fuentes de Alimentación
+        if (almacen.haySuficientesProductos(3, 4, 2, 6, 5)) {
+            almacen.retirarProductos(3, 4, 2, 6, 5); // Requiere 3 CPUs, 4 RAMs, 2 Placas Base, 6 Fuentes de Alimentación
             System.out.println("Computadora con tarjeta gráfica MSI ensamblada. Ganancia: $250K");
             computadorasEnsambladas++;
         } else {
