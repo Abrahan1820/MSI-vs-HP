@@ -1,5 +1,5 @@
 public class TimeConfig {
-    private static int duracionDiaEnSegundos = 100000; // Valor por defecto: 24 horas en segundos
+    private static int duracionDiaEnSegundos = 10000; // Valor por defecto: 24 horas en segundos
 
     // Método para establecer la duración del día
     public static void setDuracionDia(int segundos) {

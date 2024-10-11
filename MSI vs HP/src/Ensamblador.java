@@ -1,7 +1,7 @@
 public class Ensamblador extends Worker {
     private String compania; // HP o MSI
     private int computadorasEnsambladas; // Lleva la cuenta de cuántas computadoras estándar ha ensamblado
-    private static final int TIEMPO_ENSAMBLAR = 48 * 1000; // 48 horas para ensamblar una computadora
+    private static final int TIEMPO_ENSAMBLAR = 48 * TimeConfig.convertirHorasASegundos(1); // 48 horas para ensamblar una computadora
     private static final double SALARIO_POR_HORA = 50.0;
 
     public Ensamblador(Warehouse almacen, String compania) {
