@@ -25,6 +25,8 @@ public class MainFrame extends javax.swing.JFrame {
         ProductorPlacaBase productorPlacaBaseHP = new ProductorPlacaBase(almacenHP, 72 * 1000, 20.0); // Produce 1 cada 72 horas, salario por hora: 20.0
         ProductorFuenteAlimentacion productorFuenteAlimentacionHP = new ProductorFuenteAlimentacion(almacenHP, (24 / 3) * 1000, 16.0); // Produce 1 cada 8 horas (3 por día), salario por hora: 16.0
         ProductorGPU productorGPUHP = new ProductorGPU(almacenHP, 72 * 1000, 34.0); // Produce 1 cada 3 díaS, salario por hora: 34.0
+        ProjectManager PM = new ProjectManager(10);
+        Director director = new Director(PM, almacenHP);
        
         ProductorCPU productorCPUMSI = new ProductorCPU(almacenMSI, 72 * 1000, 26.0); // Produce 1 cada 72 horas, salario por hora: 26.0
         ProductorRAM productorRAMMSI = new ProductorRAM(almacenMSI, 12 * 1000, 40.0); // Produce 1 cada 12 horas, salario por hora: 40.0
@@ -43,6 +45,8 @@ public class MainFrame extends javax.swing.JFrame {
         productorFuenteAlimentacionHP.start();
         productorGPUHP.start();
         ensambladorHP.start();
+        PM.start();
+        director.start();
         
         productorCPUMSI.start();
         productorRAMMSI.start();

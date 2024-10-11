@@ -27,11 +27,11 @@ public abstract class Worker extends Thread {
     public void run() {
         while (true) {
             try {
-                Thread.sleep(1000); // Simular una hora (1 segundo real)
+                Thread.sleep(250); // Simular una hora (1 segundo real)
                 horasTrabajadas++;
                 acumularSalario();
 
-                if (horasTrabajadas >= tiempoProduccion / 1000) { // Verificar si es hora de producir
+                if (horasTrabajadas >= tiempoProduccion / 250) { // Verificar si es hora de producir
                     producir();
                     horasTrabajadas = 0;
                 }
