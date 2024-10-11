@@ -54,7 +54,7 @@ public class MainFrame extends javax.swing.JFrame {
         
         // Mostrar los recursos actuales en el almacén
         System.out.println("------- RECURSOS HP -------");
-        almacenHP.mostrarRecursos();
+        HP.mostrarRecursos();
         System.out.println("------- RECURSOS MSI -------");
         almacenMSI.mostrarRecursos();
 
