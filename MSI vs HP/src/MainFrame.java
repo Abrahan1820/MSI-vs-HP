@@ -16,6 +16,7 @@ public class MainFrame extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         
+        // Almacenes con limites de 20 CPUs, 55 RAMs, 25 PLACAS BASE y 35 FUENTEs DE ALIMENTACION
         Warehouse almacenHP = new Warehouse(20,55,25,35);
         Warehouse almacenMSI = new Warehouse(20,55,25,35);
         
@@ -25,14 +26,16 @@ public class MainFrame extends javax.swing.JFrame {
         ProductorPlacaBase productorPlacaBaseHP = new ProductorPlacaBase(almacenHP, 72 * 1000, 20.0); // Produce 1 cada 72 horas, salario por hora: 20.0
         ProductorFuenteAlimentacion productorFuenteAlimentacionHP = new ProductorFuenteAlimentacion(almacenHP, (24 / 3) * 1000, 16.0); // Produce 1 cada 8 horas (3 por día), salario por hora: 16.0
         ProductorGPU productorGPUHP = new ProductorGPU(almacenHP, 72 * 1000, 34.0); // Produce 1 cada 3 díaS, salario por hora: 34.0
-        ProjectManager PM = new ProjectManager(10);
-        Director director = new Director(PM, almacenHP);
+        ProjectManager PMHP = new ProjectManager(10);
+        Director directorHP = new Director(PMHP, almacenHP);
        
         ProductorCPU productorCPUMSI = new ProductorCPU(almacenMSI, 72 * 1000, 26.0); // Produce 1 cada 72 horas, salario por hora: 26.0
         ProductorRAM productorRAMMSI = new ProductorRAM(almacenMSI, 12 * 1000, 40.0); // Produce 1 cada 12 horas, salario por hora: 40.0
         ProductorPlacaBase productorPlacaBaseMSI = new ProductorPlacaBase(almacenMSI, 72 * 1000, 20.0); // Produce 1 cada 72 horas, salario por hora: 20.0
         ProductorFuenteAlimentacion productorFuenteAlimentacionMSI = new ProductorFuenteAlimentacion(almacenMSI, (24 / 3) * 1000, 16.0); // Produce 1 cada 8 horas (3 por día), salario por hora: 16.0
         ProductorGPU productorGPUMSI = new ProductorGPU(almacenMSI, 72 * 1000, 34.0); // Produce 1 cada 3 díaS, salario por hora: 34.0
+        ProjectManager PMMSI = new ProjectManager(10);
+        Director directorMSI = new Director(PMMSI, almacenMSI);
 
         // Crear ensambladores (HP y MSI)
         Ensamblador ensambladorHP = new Ensamblador(almacenHP, "HP");
@@ -45,8 +48,8 @@ public class MainFrame extends javax.swing.JFrame {
         productorFuenteAlimentacionHP.start();
         productorGPUHP.start();
         ensambladorHP.start();
-        PM.start();
-        director.start();
+        PMHP.start();
+        directorHP.start();
         
         productorCPUMSI.start();
         productorRAMMSI.start();
@@ -54,6 +57,8 @@ public class MainFrame extends javax.swing.JFrame {
         productorFuenteAlimentacionMSI.start();
         productorGPUMSI.start();
         ensambladorMSI.start();
+        PMMSI.start();
+        directorMSI.start();
         
         
         //Updater thread. Completar con los acumulados
@@ -61,7 +66,8 @@ public class MainFrame extends javax.swing.JFrame {
         int costosMSI = 0;
         int gananciasHP = 0;
         int gananciasMSI = 0;
-        Updater actualizador = new Updater(this, almacenHP, almacenMSI, costosHP, costosMSI, gananciasHP, gananciasMSI);
+                
+        Updater actualizador = new Updater(this, almacenHP, almacenMSI, costosHP, costosMSI, gananciasHP, gananciasMSI, PMHP, PMMSI, directorHP, directorMSI);
         actualizador.start();
         
         // Simular por un periodo de tiempo
@@ -98,8 +104,9 @@ public class MainFrame extends javax.swing.JFrame {
     
     
     // Metodo con el cual se actualiza toda la data del jFrame
-    public void actualizarData(Warehouse almacenHP, Warehouse almacenMSI, int totalCostoAcumuladoHP, int totalCostoAcumuladoMSI, int gananciasHP, int gananciasMSI){
+    public void actualizarData(Warehouse almacenHP, Warehouse almacenMSI, int totalCostoAcumuladoHP, int totalCostoAcumuladoMSI, int gananciasHP, int gananciasMSI, String estadoDirectorMSI, String estadoPMMSI, String estadoDirectorHP, String estadoPMHP){
         //HP
+        
         tieneRAMHP.setText(almacenHP.getRAM());
         tieneCPUHP.setText(almacenHP.getCPU());
         tienePlacaHP.setText(almacenHP.getPBase());
@@ -110,6 +117,8 @@ public class MainFrame extends javax.swing.JFrame {
         maxPSupplyHP.setText("/" + almacenHP.getMAXPSupply());
         maxRAMHP.setText("/" + almacenHP.getMAXRAM());
         maxPlacaHP.setText("/" + almacenHP.getMAXPBase());
+        this.estadoDirectorHP.setText(estadoDirectorHP);
+        this.estadoPMHP.setText(estadoPMHP);
         //MSI
         tieneRAMMSI.setText(almacenMSI.getRAM());
         tieneCPUMSI.setText(almacenMSI.getCPU());
@@ -121,6 +130,8 @@ public class MainFrame extends javax.swing.JFrame {
         maxPSupplyMSI.setText("/" + almacenMSI.getMAXPSupply());
         maxRAMMSI.setText("/" + almacenMSI.getMAXRAM());
         maxPlacaMSI.setText("/" + almacenMSI.getMAXPBase());
+        this.estadoDirectorMSI.setText(estadoDirectorMSI);
+        this.estadoPMMSI.setText(estadoPMMSI);
     }
     
     /**
@@ -162,6 +173,10 @@ public class MainFrame extends javax.swing.JFrame {
         panelContadorCPUMSI = new javax.swing.JPanel();
         maxCPUMSI = new javax.swing.JLabel();
         tieneCPUMSI = new javax.swing.JLabel();
+        labelEstadoDirectorMSI = new javax.swing.JLabel();
+        estadoDirectorMSI = new javax.swing.JLabel();
+        labelEstadoPMMSI = new javax.swing.JLabel();
+        estadoPMMSI = new javax.swing.JLabel();
         companyPanelHP = new javax.swing.JPanel();
         logoHP = new javax.swing.JLabel();
         panelEnsambladorHP = new javax.swing.JPanel();
@@ -192,11 +207,17 @@ public class MainFrame extends javax.swing.JFrame {
         panelContadorCPUHP = new javax.swing.JPanel();
         maxCPUHP = new javax.swing.JLabel();
         tieneCPUHP = new javax.swing.JLabel();
+        labelDia = new javax.swing.JLabel();
+        labelEstadoDirectorHP = new javax.swing.JLabel();
+        labelEstadoPMHP = new javax.swing.JLabel();
+        estadoDirectorHP = new javax.swing.JLabel();
+        estadoPMHP = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("HP VS MSI");
         setLocation(new java.awt.Point(0, 0));
-        setPreferredSize(new java.awt.Dimension(920, 540));
+        setPreferredSize(new java.awt.Dimension(928, 600));
         setResizable(false);
 
         companyPanelMSI.setBackground(new java.awt.Color(102, 102, 102));
@@ -287,9 +308,9 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(panelGPUMSILayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(GPUMSI, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(174, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelGPUMSILayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(156, Short.MAX_VALUE)
                 .addComponent(panelContadorGPUMSI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -413,13 +434,13 @@ public class MainFrame extends javax.swing.JFrame {
         panelPSupplyMSILayout.setHorizontalGroup(
             panelPSupplyMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelPSupplyMSILayout.createSequentialGroup()
-                .addContainerGap(156, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(panelContadoPSupplyHP1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
             .addGroup(panelPSupplyMSILayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(AlimentacionMSI, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(152, Short.MAX_VALUE))
         );
         panelPSupplyMSILayout.setVerticalGroup(
             panelPSupplyMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -561,6 +582,20 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        labelEstadoDirectorMSI.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        labelEstadoDirectorMSI.setText("El Director está:");
+
+        estadoDirectorMSI.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        estadoDirectorMSI.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        estadoDirectorMSI.setText("El Director está:");
+
+        labelEstadoPMMSI.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        labelEstadoPMMSI.setText("El PM está:");
+
+        estadoPMMSI.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        estadoPMMSI.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        estadoPMMSI.setText("El PM está:");
+
         javax.swing.GroupLayout companyPanelMSILayout = new javax.swing.GroupLayout(companyPanelMSI);
         companyPanelMSI.setLayout(companyPanelMSILayout);
         companyPanelMSILayout.setHorizontalGroup(
@@ -575,25 +610,48 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(panelRAMMSI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(panelPSupplyMSI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 1, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, companyPanelMSILayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(panelCPUMSI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(companyPanelMSILayout.createSequentialGroup()
+                .addGap(15, 15, 15)
                 .addGroup(companyPanelMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelCPUMSI, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(panelPBaseMSI, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, companyPanelMSILayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(logoMSI, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                    .addComponent(labelEstadoPMMSI, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(companyPanelMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, companyPanelMSILayout.createSequentialGroup()
+                            .addComponent(labelEstadoDirectorMSI, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(17, 17, 17))
+                        .addGroup(companyPanelMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(estadoDirectorMSI, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(estadoPMMSI, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(companyPanelMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(panelPBaseMSI, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, companyPanelMSILayout.createSequentialGroup()
+                        .addComponent(logoMSI, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
         );
         companyPanelMSILayout.setVerticalGroup(
             companyPanelMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(companyPanelMSILayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(logoMSI)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(panelPBaseMSI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(companyPanelMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(companyPanelMSILayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(logoMSI)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+                        .addComponent(panelPBaseMSI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                    .addGroup(companyPanelMSILayout.createSequentialGroup()
+                        .addGap(62, 62, 62)
+                        .addComponent(labelEstadoDirectorMSI)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(estadoDirectorMSI)
+                        .addGap(18, 18, 18)
+                        .addComponent(labelEstadoPMMSI)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(estadoPMMSI)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addComponent(panelCPUMSI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(companyPanelMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -821,13 +879,13 @@ public class MainFrame extends javax.swing.JFrame {
         panelPSupplyHPLayout.setHorizontalGroup(
             panelPSupplyHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelPSupplyHPLayout.createSequentialGroup()
-                .addContainerGap(156, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(panelContadoPSupplyHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
             .addGroup(panelPSupplyHPLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(AlimentacionHP, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(152, Short.MAX_VALUE))
         );
         panelPSupplyHPLayout.setVerticalGroup(
             panelPSupplyHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -969,6 +1027,23 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        labelDia.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        labelDia.setText("Dia:");
+
+        labelEstadoDirectorHP.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        labelEstadoDirectorHP.setText("El Director está:");
+
+        labelEstadoPMHP.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        labelEstadoPMHP.setText("El PM está:");
+
+        estadoDirectorHP.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        estadoDirectorHP.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        estadoDirectorHP.setText("El Director está:");
+
+        estadoPMHP.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        estadoPMHP.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        estadoPMHP.setText("El PM está:");
+
         javax.swing.GroupLayout companyPanelHPLayout = new javax.swing.GroupLayout(companyPanelHP);
         companyPanelHP.setLayout(companyPanelHPLayout);
         companyPanelHPLayout.setHorizontalGroup(
@@ -977,32 +1052,64 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(companyPanelHPLayout.createSequentialGroup()
+                        .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(companyPanelHPLayout.createSequentialGroup()
+                                .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(panelCPUHP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(panelPBaseHP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(32, 32, 32)
+                                .addComponent(labelEstadoPMHP, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, companyPanelHPLayout.createSequentialGroup()
+                                    .addComponent(panelGPUHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(panelEnsambladorHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, companyPanelHPLayout.createSequentialGroup()
+                                    .addComponent(panelRAMHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(panelPSupplyHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addContainerGap())
+                    .addGroup(companyPanelHPLayout.createSequentialGroup()
                         .addGap(29, 29, 29)
-                        .addComponent(logoHP, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(panelCPUHP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(panelPBaseHP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, companyPanelHPLayout.createSequentialGroup()
-                            .addComponent(panelGPUHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(panelEnsambladorHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, companyPanelHPLayout.createSequentialGroup()
-                            .addComponent(panelRAMHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(panelPSupplyHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(logoHP, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, companyPanelHPLayout.createSequentialGroup()
+                                .addComponent(labelDia, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(141, 141, 141))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, companyPanelHPLayout.createSequentialGroup()
+                                .addComponent(labelEstadoDirectorHP, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(35, 35, 35))
+                            .addGroup(companyPanelHPLayout.createSequentialGroup()
+                                .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(estadoDirectorHP, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
+                                    .addComponent(estadoPMHP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addContainerGap())))))
         );
         companyPanelHPLayout.setVerticalGroup(
             companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(companyPanelHPLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(logoHP)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(panelPBaseHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelCPUHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(companyPanelHPLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(logoHP)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(panelPBaseHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(panelCPUHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                    .addGroup(companyPanelHPLayout.createSequentialGroup()
+                        .addGap(19, 19, 19)
+                        .addComponent(labelDia)
+                        .addGap(18, 18, 18)
+                        .addComponent(labelEstadoDirectorHP)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(estadoDirectorHP)
+                        .addGap(18, 18, 18)
+                        .addComponent(labelEstadoPMHP)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(estadoPMHP)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panelPSupplyHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(panelRAMHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -1012,19 +1119,44 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(panelGPUHP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
+        jPanel1.setBackground(new java.awt.Color(102, 102, 102));
+        jPanel1.setPreferredSize(new java.awt.Dimension(920, 30));
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 902, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 30, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(companyPanelHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(companyPanelMSI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(companyPanelHP, javax.swing.GroupLayout.PREFERRED_SIZE, 456, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(companyPanelMSI, javax.swing.GroupLayout.PREFERRED_SIZE, 450, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 902, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(companyPanelHP, javax.swing.GroupLayout.DEFAULT_SIZE, 540, Short.MAX_VALUE)
-            .addComponent(companyPanelMSI, javax.swing.GroupLayout.DEFAULT_SIZE, 540, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(companyPanelHP, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
+                    .addComponent(companyPanelMSI, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(44, Short.MAX_VALUE))
         );
 
         pack();
@@ -1080,8 +1212,18 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel RAMMSI;
     private javax.swing.JPanel companyPanelHP;
     private javax.swing.JPanel companyPanelMSI;
+    private javax.swing.JLabel estadoDirectorHP;
+    private javax.swing.JLabel estadoDirectorMSI;
+    private javax.swing.JLabel estadoPMHP;
+    private javax.swing.JLabel estadoPMMSI;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JProgressBar jProgressBar3;
     private javax.swing.JProgressBar jProgressBar4;
+    private javax.swing.JLabel labelDia;
+    private javax.swing.JLabel labelEstadoDirectorHP;
+    private javax.swing.JLabel labelEstadoDirectorMSI;
+    private javax.swing.JLabel labelEstadoPMHP;
+    private javax.swing.JLabel labelEstadoPMMSI;
     private javax.swing.JLabel logoHP;
     private javax.swing.JLabel logoMSI;
     private javax.swing.JLabel maxCPUHP;

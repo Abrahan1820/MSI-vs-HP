@@ -6,8 +6,14 @@ public class Updater extends Thread {
     protected int costosMSI;
     protected int gananciasHP;
     protected int gananciasMSI;
+    protected Director estadoDirectorMSI;
+    protected ProjectManager estadoPMMSI;
+    protected String strestadoPMMSI;
+    protected Director estadoDirectorHP;
+    protected ProjectManager estadoPMHP;
+    protected String strestadoPMHP;
     
-    public Updater(MainFrame frame, Warehouse almacenHP, Warehouse almacenMSI, int costosHP, int costosMSI, int gananciasHP, int gananciasMSI){
+    public Updater(MainFrame frame, Warehouse almacenHP, Warehouse almacenMSI, int costosHP, int costosMSI, int gananciasHP, int gananciasMSI, ProjectManager pMHP, ProjectManager pMMSI, Director dirHP, Director dirMSI){
         this.frame = frame;
         this.almacenHP = almacenHP;
         this.almacenMSI = almacenMSI;
@@ -15,11 +21,25 @@ public class Updater extends Thread {
         this.costosMSI = costosMSI;        
         this.gananciasHP = gananciasHP;        
         this.gananciasMSI = gananciasMSI;        
+        this.estadoPMHP = pMHP;
+        this.estadoPMMSI = pMMSI;
+        this.estadoDirectorHP = dirHP;
+        this.estadoDirectorMSI = dirMSI;
     }
 
     protected void actualizarMainFrame() {
         while (true) {
-        frame.actualizarData(almacenHP, almacenMSI, costosHP, costosMSI, gananciasHP, gananciasMSI);
+            if (this.estadoPMHP.getVerAnime()) {
+                this.strestadoPMHP = "Viendo Anime";
+            } else {
+                this.strestadoPMHP = "Trabajando";
+            }
+            if (this.estadoPMMSI.getVerAnime()) {
+                this.strestadoPMMSI = "Viendo Anime";
+            } else {
+                this.strestadoPMMSI = "Trabajando";
+            }
+            frame.actualizarData(almacenHP, almacenMSI, costosHP, costosMSI, gananciasHP, gananciasMSI, estadoDirectorMSI.getEstado(), strestadoPMMSI, estadoDirectorHP.getEstado(), strestadoPMHP);
         }
     }
     
@@ -27,7 +47,7 @@ public class Updater extends Thread {
     public void run() {
         while (true) {
             try {
-                Thread.sleep(10); // Simular una hora (1 segundo real)
+                Thread.sleep(12); 
                 actualizarMainFrame();
             } catch (InterruptedException e) {
                 e.printStackTrace();

@@ -30,6 +30,10 @@ public class ProjectManager extends Worker {
             }
         }
     }
+    
+    public boolean getVerAnime(){
+        return this.viendoAnime;
+    }
 
     // Método para simular que el PM está viendo anime
     private void verAnime() {

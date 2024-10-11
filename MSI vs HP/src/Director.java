@@ -4,11 +4,13 @@ public class Director extends Worker {
     private static final int HORAS_DE_TRABAJO = 24; // Horas de trabajo diarias del Director
     private static final double SALARIO_POR_HORA = 60.0; // Salario por hora del Director
     private static final int DESCUENTO_POR_FALTA = 100; // Descuento por ver anime
-
+    private String estado;
+    
     public Director(ProjectManager pm, Warehouse almacen) {
         super(almacen, 0, SALARIO_POR_HORA);
         this.pm = pm;
         this.diasLaborados = 0;
+        this.estado = "";
     }
 
     @Override
@@ -39,7 +41,8 @@ public class Director extends Worker {
 
     // Método para monitorear el almacén
     private void monitorearAlmacen() {
-        System.out.println("Director monitoreando el almacén...");
+        System.out.println("Director monitoreando el almacén...");  
+        this.estado = "Monitoreando Almacen";
         almacen.mostrarRecursos();
         try {
             Thread.sleep(5000); // Simular monitoreo durante 5 segundos
@@ -47,10 +50,15 @@ public class Director extends Worker {
             e.printStackTrace();
         }
     }
+    
+    public String getEstado(){
+        return this.estado;
+    }
 
     // Método para gestionar las operaciones del día
     private void gestionarOperaciones() {
         System.out.println("Director gestionando operaciones...");
+        this.estado = "Gestionando Operaciones";
         try {
             Thread.sleep(5000); // Simular gestión durante 5 segundos
         } catch (InterruptedException e) {
@@ -61,6 +69,7 @@ public class Director extends Worker {
     // Método para supervisar al PM y aplicar sanciones si está viendo anime
     private void supervisarPM() {
         System.out.println("Director supervisando al Project Manager...");
+        this.estado = "Supervisando al PM";
         if (pm.estaViendoAnime()) {
             System.out.println("El Director ha encontrado al PM viendo anime. Aplicando sanción...");
             aplicarSancion();
