@@ -30,7 +30,7 @@ protected void producir() {
                     System.out.println("Esperando recursos para ensamblar MSI...");
                 }
             }
-            Thread.sleep(1000); // Espera 1 segundos antes de volver a intentar
+            Thread.sleep(TimeConfig.convertirHorasASegundos(1)); // Espera 1 segundos antes de volver a intentar
         }
     } catch (InterruptedException e) {
         e.printStackTrace();

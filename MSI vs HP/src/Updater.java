@@ -27,7 +27,7 @@ public class Updater extends Thread {
     public void run() {
         while (true) {
             try {
-                Thread.sleep(10); // Simular una hora (1 segundo real)
+                Thread.sleep(TimeConfig.convertirHorasASegundos(1)); // Simular una hora (1 segundo real)
                 actualizarMainFrame();
             } catch (InterruptedException e) {
                 e.printStackTrace();

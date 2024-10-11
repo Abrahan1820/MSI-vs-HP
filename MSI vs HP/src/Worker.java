@@ -27,7 +27,7 @@ public abstract class Worker extends Thread {
     public void run() {
         while (true) {
             try {
-                Thread.sleep(250); // Simular una hora (1 segundo real)
+                Thread.sleep(TimeConfig.convertirHorasASegundos(1)); // Simular una hora (1 segundo real)
                 horasTrabajadas++;
                 acumularSalario();
 

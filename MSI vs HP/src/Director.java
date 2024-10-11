@@ -30,7 +30,7 @@ public class Director extends Worker {
                     }
                 }
                 diasLaborados++;
-                Thread.sleep(1000); // Simular paso de un día laboral
+                Thread.sleep(TimeConfig.convertirHorasASegundos(1)); // Simular paso de un día laboral
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -42,7 +42,7 @@ public class Director extends Worker {
         System.out.println("Director monitoreando el almacén...");
         almacen.mostrarRecursos();
         try {
-            Thread.sleep(5000); // Simular monitoreo durante 5 segundos
+            Thread.sleep(TimeConfig.convertirHorasASegundos(5)); // Simular monitoreo durante 5 segundos
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -52,7 +52,7 @@ public class Director extends Worker {
     private void gestionarOperaciones() {
         System.out.println("Director gestionando operaciones...");
         try {
-            Thread.sleep(5000); // Simular gestión durante 5 segundos
+            Thread.sleep(TimeConfig.convertirHorasASegundos(5)); // Simular gestión durante 5 segundos
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

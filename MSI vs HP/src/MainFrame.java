@@ -20,17 +20,17 @@ public class MainFrame extends javax.swing.JFrame {
         Warehouse almacenMSI = new Warehouse(20,55,25,35);
         
         // Crear productores
-        crearProductoresYEnsamblador(HP, 2, 2, 1, 3, 2, 2); //HP representa el almacen, debe ser HP o MSI 
+        crearProductoresYEnsamblador(HP, 1, 1, 1, 1, 1, 1); //HP representa el almacen, debe ser HP o MSI 
         //y cada uno de los numeros representa la cantidad de trabajadores en cada area.
         
         ProjectManager PM = new ProjectManager(10);
         Director director = new Director(PM, HP);
        
-        ProductorCPU productorCPUMSI = new ProductorCPU(almacenMSI, 72 * 1000, 26.0); // Produce 1 cada 72 horas, salario por hora: 26.0
-        ProductorRAM productorRAMMSI = new ProductorRAM(almacenMSI, 12 * 1000, 40.0); // Produce 1 cada 12 horas, salario por hora: 40.0
-        ProductorPlacaBase productorPlacaBaseMSI = new ProductorPlacaBase(almacenMSI, 72 * 1000, 20.0); // Produce 1 cada 72 horas, salario por hora: 20.0
-        ProductorFuenteAlimentacion productorFuenteAlimentacionMSI = new ProductorFuenteAlimentacion(almacenMSI, (24 / 3) * 1000, 16.0); // Produce 1 cada 8 horas (3 por día), salario por hora: 16.0
-        ProductorGPU productorGPUMSI = new ProductorGPU(almacenMSI, 72 * 1000, 34.0); // Produce 1 cada 3 díaS, salario por hora: 34.0
+        ProductorCPU productorCPUMSI = new ProductorCPU(almacenMSI, 72 * (TimeConfig.convertirHorasASegundos(1)), 26.0); // Produce 1 cada 72 horas, salario por hora: 26.0
+        ProductorRAM productorRAMMSI = new ProductorRAM(almacenMSI, 12 * (TimeConfig.convertirHorasASegundos(1)), 40.0); // Produce 1 cada 12 horas, salario por hora: 40.0
+        ProductorPlacaBase productorPlacaBaseMSI = new ProductorPlacaBase(almacenMSI, 72 * (TimeConfig.convertirHorasASegundos(1)), 20.0); // Produce 1 cada 72 horas, salario por hora: 20.0
+        ProductorFuenteAlimentacion productorFuenteAlimentacionMSI = new ProductorFuenteAlimentacion(almacenMSI, (24 / 3) * (TimeConfig.convertirHorasASegundos(1)), 16.0); // Produce 1 cada 8 horas (3 por día), salario por hora: 16.0
+        ProductorGPU productorGPUMSI = new ProductorGPU(almacenMSI, 72 * (TimeConfig.convertirHorasASegundos(1)), 34.0); // Produce 1 cada 3 díaS, salario por hora: 34.0
 
         // Crear ensambladores (HP y MSI)
 
@@ -59,7 +59,7 @@ public class MainFrame extends javax.swing.JFrame {
         
         // Simular por un periodo de tiempo
         try {
-            Thread.sleep(10000); // Simular por X segundos (ajustar según sea necesario)
+            Thread.sleep((TimeConfig.convertirHorasASegundos(10))); // Simular por X segundos (ajustar según sea necesario)
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -90,11 +90,11 @@ public class MainFrame extends javax.swing.JFrame {
     
     // Variables
     final int maxProductores = 15; // Máximo de productores y ensambladores
-    int tiempoProduccionCPU = 72 * 1000; // Tiempo de producción para CPU
-    int tiempoProduccionRAM = 12 * 1000; // Tiempo de producción para RAM
-    int tiempoProduccionPlacaBase = 72 * 1000; // Tiempo de producción para Placa Base
-    int tiempoProduccionFuenteAlimentacion = 8 * 1000; // Tiempo de producción para Fuente de Alimentación
-    int tiempoProduccionGPU = 72 * 1000; // Tiempo de producción para GPU
+    int tiempoProduccionCPU = 72 * (TimeConfig.convertirHorasASegundos(1)); // Tiempo de producción para CPU
+    int tiempoProduccionRAM = 12 * (TimeConfig.convertirHorasASegundos(1)); // Tiempo de producción para RAM
+    int tiempoProduccionPlacaBase = 72 * (TimeConfig.convertirHorasASegundos(1)); // Tiempo de producción para Placa Base
+    int tiempoProduccionFuenteAlimentacion = 8 * (TimeConfig.convertirHorasASegundos(1)); // Tiempo de producción para Fuente de Alimentación
+    int tiempoProduccionGPU = 72 * (TimeConfig.convertirHorasASegundos(1)); // Tiempo de producción para GPU
     double salarioPorHoraCPU = 26.0; // Salario por hora para CPU
     double salarioPorHoraRAM = 40.0; // Salario por hora para RAM
     double salarioPorHoraPlacaBase = 20.0; // Salario por hora para Placa Base
