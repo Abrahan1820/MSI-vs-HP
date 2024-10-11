@@ -16,17 +16,15 @@ public class MainFrame extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         
-        Warehouse almacenHP = new Warehouse(20,55,25,35);
+        Warehouse HP = new Warehouse(20,55,25,35);
         Warehouse almacenMSI = new Warehouse(20,55,25,35);
         
         // Crear productores
-        ProductorCPU productorCPUHP = new ProductorCPU(almacenHP, 72 * 1000, 26.0); // Produce 1 cada 72 horas, salario por hora: 26.0
-        ProductorRAM productorRAMHP = new ProductorRAM(almacenHP, 12 * 1000, 40.0); // Produce 1 cada 12 horas, salario por hora: 40.0
-        ProductorPlacaBase productorPlacaBaseHP = new ProductorPlacaBase(almacenHP, 72 * 1000, 20.0); // Produce 1 cada 72 horas, salario por hora: 20.0
-        ProductorFuenteAlimentacion productorFuenteAlimentacionHP = new ProductorFuenteAlimentacion(almacenHP, (24 / 3) * 1000, 16.0); // Produce 1 cada 8 horas (3 por día), salario por hora: 16.0
-        ProductorGPU productorGPUHP = new ProductorGPU(almacenHP, 72 * 1000, 34.0); // Produce 1 cada 3 díaS, salario por hora: 34.0
+        crearProductoresYEnsamblador(HP, 2, 2, 1, 3, 2, 2); //HP representa el almacen, debe ser HP o MSI 
+        //y cada uno de los numeros representa la cantidad de trabajadores en cada area.
+        
         ProjectManager PM = new ProjectManager(10);
-        Director director = new Director(PM, almacenHP);
+        Director director = new Director(PM, HP);
        
         ProductorCPU productorCPUMSI = new ProductorCPU(almacenMSI, 72 * 1000, 26.0); // Produce 1 cada 72 horas, salario por hora: 26.0
         ProductorRAM productorRAMMSI = new ProductorRAM(almacenMSI, 12 * 1000, 40.0); // Produce 1 cada 12 horas, salario por hora: 40.0
@@ -35,16 +33,11 @@ public class MainFrame extends javax.swing.JFrame {
         ProductorGPU productorGPUMSI = new ProductorGPU(almacenMSI, 72 * 1000, 34.0); // Produce 1 cada 3 díaS, salario por hora: 34.0
 
         // Crear ensambladores (HP y MSI)
-        Ensamblador ensambladorHP = new Ensamblador(almacenHP, "HP");
+
         Ensamblador ensambladorMSI = new Ensamblador(almacenMSI, "MSI");
        
         // Iniciar los hilos de los productores y ensambladores. Por ahora, hay 1 por cada area de cada almacen
-        productorCPUHP.start();
-        productorRAMHP.start();
-        productorPlacaBaseHP.start();
-        productorFuenteAlimentacionHP.start();
-        productorGPUHP.start();
-        ensambladorHP.start();
+        
         PM.start();
         director.start();
         
@@ -61,7 +54,7 @@ public class MainFrame extends javax.swing.JFrame {
         int costosMSI = 0;
         int gananciasHP = 0;
         int gananciasMSI = 0;
-        Updater actualizador = new Updater(this, almacenHP, almacenMSI, costosHP, costosMSI, gananciasHP, gananciasMSI);
+        Updater actualizador = new Updater(this, HP, almacenMSI, costosHP, costosMSI, gananciasHP, gananciasMSI);
         actualizador.start();
         
         // Simular por un periodo de tiempo
@@ -73,19 +66,13 @@ public class MainFrame extends javax.swing.JFrame {
         
         // Mostrar los recursos actuales en el almacén
         System.out.println("------- RECURSOS HP -------");
-        almacenHP.mostrarRecursos();
+        HP.mostrarRecursos();
         System.out.println("------- RECURSOS MSI -------");
         almacenMSI.mostrarRecursos();
 
         // Imprimir el salario total acumulado de los productores y ensambladores
         System.out.println("------- PAGOS HP -------");
-        System.out.println("Salario total Productor CPU: " + productorCPUHP.getSalarioTotal());
-        System.out.println("Salario total Productor RAM: " + productorRAMHP.getSalarioTotal());
-        System.out.println("Salario total Productor Placa Base: " + productorPlacaBaseHP.getSalarioTotal());
-        System.out.println("Salario total Productor Fuente Alimentación: " + productorFuenteAlimentacionHP.getSalarioTotal());
-        System.out.println("Salario total Productor GPU: " + productorGPUHP.getSalarioTotal());
-        System.out.println("Salario total Ensamblador HP: " + ensambladorHP.getSalarioTotal());
-        System.out.println("");
+        
         System.out.println("------- PAGOS HP -------");
         System.out.println("Salario total Productor CPU: " + productorCPUMSI.getSalarioTotal());
         System.out.println("Salario total Productor RAM: " + productorRAMMSI.getSalarioTotal());
@@ -95,6 +82,77 @@ public class MainFrame extends javax.swing.JFrame {
         System.out.println("Salario total Ensamblador HP: " + ensambladorMSI.getSalarioTotal());
         
     }
+    
+    //Metodo para crear productores y ensambladores
+    public void crearProductoresYEnsamblador(Warehouse almacen, int cantidadProductoresCPU, int cantidadProductoresRAM, 
+                                          int cantidadProductoresPlacaBase, int cantidadProductoresFuenteAlimentacion, 
+                                          int cantidadProductoresGPU, int cantidadEnsamblador) {
+    
+    // Variables
+    final int maxProductores = 15; // Máximo de productores y ensambladores
+    int tiempoProduccionCPU = 72 * 1000; // Tiempo de producción para CPU
+    int tiempoProduccionRAM = 12 * 1000; // Tiempo de producción para RAM
+    int tiempoProduccionPlacaBase = 72 * 1000; // Tiempo de producción para Placa Base
+    int tiempoProduccionFuenteAlimentacion = 8 * 1000; // Tiempo de producción para Fuente de Alimentación
+    int tiempoProduccionGPU = 72 * 1000; // Tiempo de producción para GPU
+    double salarioPorHoraCPU = 26.0; // Salario por hora para CPU
+    double salarioPorHoraRAM = 40.0; // Salario por hora para RAM
+    double salarioPorHoraPlacaBase = 20.0; // Salario por hora para Placa Base
+    double salarioPorHoraFuenteAlimentacion = 16.0; // Salario por hora para Fuente de Alimentación
+    double salarioPorHoraGPU = 34.0; // Salario por hora para GPU
+
+    // Calcular el total de productores
+    int totalProductores = cantidadProductoresCPU + cantidadProductoresRAM + 
+                           cantidadProductoresPlacaBase + cantidadProductoresFuenteAlimentacion +
+                           cantidadProductoresGPU + cantidadEnsamblador;
+
+    // Verificar condiciones
+    if (cantidadProductoresCPU < 1 || cantidadProductoresRAM < 1 ||
+        cantidadProductoresPlacaBase < 1 || cantidadProductoresFuenteAlimentacion < 1 ||
+        cantidadProductoresGPU < 1 || cantidadEnsamblador < 1) {
+        System.out.println("Error: Cada cantidad de productores y ensambladores debe ser al menos 1.");
+        System.exit(1);
+    }
+
+    if (totalProductores > maxProductores) {
+        System.out.println("Error: La suma de todos los productores y ensambladores no puede ser mayor a " + maxProductores + ".");
+        System.exit(1);
+    }
+
+    // Crear productores
+    for (int i = 0; i < cantidadProductoresCPU; i++) {
+        ProductorCPU productorCPU = new ProductorCPU(almacen, tiempoProduccionCPU, salarioPorHoraCPU);
+        productorCPU.start();
+    }
+
+    for (int i = 0; i < cantidadProductoresRAM; i++) {
+        ProductorRAM productorRAM = new ProductorRAM(almacen, tiempoProduccionRAM, salarioPorHoraRAM);
+        productorRAM.start();
+    }
+
+    for (int i = 0; i < cantidadProductoresPlacaBase; i++) {
+        ProductorPlacaBase productorPlacaBase = new ProductorPlacaBase(almacen, tiempoProduccionPlacaBase, salarioPorHoraPlacaBase);
+        productorPlacaBase.start();
+    }
+
+    for (int i = 0; i < cantidadProductoresFuenteAlimentacion; i++) {
+        ProductorFuenteAlimentacion productorFuenteAlimentacion = new ProductorFuenteAlimentacion(almacen, tiempoProduccionFuenteAlimentacion, salarioPorHoraFuenteAlimentacion);
+        productorFuenteAlimentacion.start();
+    }
+
+    for (int i = 0; i < cantidadProductoresGPU; i++) {
+        ProductorGPU productorGPU = new ProductorGPU(almacen, tiempoProduccionGPU, salarioPorHoraGPU);
+        productorGPU.start();
+    }
+
+    // Crear ensambladores
+    for (int i = 0; i < cantidadEnsamblador; i++) {
+        Ensamblador ensamblador = new Ensamblador(almacen, "HP");
+        ensamblador.start();
+    }
+}
+
+
     
     
     // Metodo con el cual se actualiza toda la data del jFrame
