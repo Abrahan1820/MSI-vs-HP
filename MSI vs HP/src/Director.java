@@ -32,20 +32,8 @@ public class Director extends Worker {
                     }
                 }
                 diasLaborados++;
-                Thread.sleep(1000); // Simular paso de un día laboral
+                Thread.sleep(TimeConfig.convertirHorasASegundos(1)); // Simular paso de un día laboral
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Método para monitorear el almacén
-    private void monitorearAlmacen() {
-        System.out.println("Director monitoreando el almacén...");  
-        this.estado = "Monitoreando Almacen";
-        almacen.mostrarRecursos();
-        try {
-            Thread.sleep(5000); // Simular monitoreo durante 5 segundos
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -55,12 +43,24 @@ public class Director extends Worker {
         return this.estado;
     }
 
+    // Método para monitorear el almacén
+    private void monitorearAlmacen() {
+        System.out.println("Director monitoreando el almacén...");  
+        this.estado = "Monitoreando Almacen";
+        almacen.mostrarRecursos();
+        try {
+            Thread.sleep(TimeConfig.convertirHorasASegundos(5)); // Simular monitoreo durante 5 segundos
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     // Método para gestionar las operaciones del día
     private void gestionarOperaciones() {
         System.out.println("Director gestionando operaciones...");
         this.estado = "Gestionando Operaciones";
         try {
-            Thread.sleep(5000); // Simular gestión durante 5 segundos
+            Thread.sleep(TimeConfig.convertirHorasASegundos(5)); // Simular gestión durante 5 segundos
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

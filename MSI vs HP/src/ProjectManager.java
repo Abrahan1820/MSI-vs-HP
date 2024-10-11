@@ -40,7 +40,7 @@ public class ProjectManager extends Worker {
         viendoAnime = true; // El PM está viendo anime
         System.out.println("Project Manager viendo anime...");
         try {
-            Thread.sleep(30 * 250); // Espera 30 minutos
+            Thread.sleep(TimeConfig.convertirMinutosASegundos(30)); // Espera 30 minutos
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -51,7 +51,7 @@ public class ProjectManager extends Worker {
     private void trabajar() {
         System.out.println("Project Manager revisando el avance del proyecto...");
         try {
-            Thread.sleep(30 * 250); // Espera 30 minutos
+            Thread.sleep(TimeConfig.convertirMinutosASegundos(30)); // Espera 30 minutos
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -65,7 +65,7 @@ public class ProjectManager extends Worker {
         }
         System.out.println("Días restantes para la entrega: " + diasRestantes);
         try {
-            Thread.sleep(60 * 250); // Espera 1 hora
+            Thread.sleep(TimeConfig.convertirHorasASegundos(1)); // Espera 1 hora
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
