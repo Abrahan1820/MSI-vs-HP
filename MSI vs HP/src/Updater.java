@@ -12,8 +12,10 @@ public class Updater extends Thread {
     protected Director estadoDirectorHP;
     protected ProjectManager estadoPMHP;
     protected String strestadoPMHP;
+    protected Ensamblador ensamHP;
+    protected Ensamblador ensamMSI;
     
-    public Updater(MainFrame frame, Warehouse almacenHP, Warehouse almacenMSI, int costosHP, int costosMSI, int gananciasHP, int gananciasMSI, ProjectManager pMHP, ProjectManager pMMSI, Director dirHP, Director dirMSI){
+    public Updater(MainFrame frame, Warehouse almacenHP, Warehouse almacenMSI, int costosHP, int costosMSI, int gananciasHP, int gananciasMSI, ProjectManager pMHP, ProjectManager pMMSI, Director dirHP, Director dirMSI, Ensamblador ensambladorHP, Ensamblador ensambladorMSI){
         this.frame = frame;
         this.almacenHP = almacenHP;
         this.almacenMSI = almacenMSI;
@@ -25,6 +27,8 @@ public class Updater extends Thread {
         this.estadoPMMSI = pMMSI;
         this.estadoDirectorHP = dirHP;
         this.estadoDirectorMSI = dirMSI;
+        this.ensamHP = ensambladorHP;
+        this.ensamMSI = ensambladorMSI;
     }
 
     protected void actualizarMainFrame() {
@@ -39,7 +43,12 @@ public class Updater extends Thread {
             } else {
                 this.strestadoPMMSI = "Trabajando";
             }
-            frame.actualizarData(almacenHP, almacenMSI, costosHP, costosMSI, gananciasHP, gananciasMSI, estadoDirectorMSI.getEstado(), strestadoPMMSI, estadoDirectorHP.getEstado(), strestadoPMHP);
+            int regPCHP = this.ensamHP.getComputadorasRegEnsambladas();
+            int premPCHP = this.ensamHP.getComputadorasPremEnsambladas();
+            int regPCMSI = this.ensamMSI.getComputadorasRegEnsambladas();
+            int premPCMSI = this.ensamMSI.getComputadorasPremEnsambladas();
+            
+            frame.actualizarData(almacenHP, almacenMSI, costosHP, costosMSI, gananciasHP, gananciasMSI, estadoDirectorMSI.getEstado(), strestadoPMMSI, estadoDirectorHP.getEstado(), strestadoPMHP, regPCHP, premPCHP, regPCMSI, premPCMSI);
         }
     }
     

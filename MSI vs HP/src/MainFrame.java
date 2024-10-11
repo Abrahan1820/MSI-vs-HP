@@ -20,9 +20,14 @@ public class MainFrame extends javax.swing.JFrame {
         Warehouse almacenHP = new Warehouse(20,55,25,35);
         Warehouse almacenMSI = new Warehouse(20,55,25,35);
         
+        Ensamblador ensambladorHP = new Ensamblador(almacenHP, "HP");
+        ensambladorHP.start();
+        Ensamblador ensambladorMSI = new Ensamblador(almacenMSI, "MSI");
+        ensambladorMSI.start();
+        
          // Crear productores
-        crearProductoresYEnsamblador(almacenHP, 1, 1, 1, 1, 1, 1); //HP representa el almacen, debe ser HP o MSI 
-        crearProductoresYEnsamblador(almacenMSI, 1, 1, 1, 1, 1, 1); //HP representa el almacen, debe ser HP o MSI 
+        crearProductoresYEnsamblador(almacenHP, 1, 1, 1, 1, 1); //HP representa el almacen, debe ser HP o MSI 
+        crearProductoresYEnsamblador(almacenMSI, 1, 1, 1, 1, 1); //HP representa el almacen, debe ser HP o MSI 
         //y cada uno de los numeros representa la cantidad de trabajadores en cada area.
         
         // Iniciar los hilos de los PM y Directores. Por ahora, hay 1 por cada area de cada almacen
@@ -42,7 +47,7 @@ public class MainFrame extends javax.swing.JFrame {
         int gananciasHP = 0;
         int gananciasMSI = 0;
                 
-        Updater actualizador = new Updater(this, almacenHP, almacenMSI, costosHP, costosMSI, gananciasHP, gananciasMSI, PMHP, PMMSI, directorHP, directorMSI);
+        Updater actualizador = new Updater(this, almacenHP, almacenMSI, costosHP, costosMSI, gananciasHP, gananciasMSI, PMHP, PMMSI, directorHP, directorMSI, ensambladorHP, ensambladorMSI);
         actualizador.start();
         
         // Simular por un periodo de tiempo
@@ -63,7 +68,7 @@ public class MainFrame extends javax.swing.JFrame {
     //Metodo para crear productores y ensambladores
     public void crearProductoresYEnsamblador(Warehouse almacen, int cantidadProductoresCPU, int cantidadProductoresRAM, 
                                           int cantidadProductoresPlacaBase, int cantidadProductoresFuenteAlimentacion, 
-                                          int cantidadProductoresGPU, int cantidadEnsamblador) {
+                                          int cantidadProductoresGPU) {
     
     // Variables
     final int maxProductores = 15; // Máximo de productores y ensambladores
@@ -81,12 +86,12 @@ public class MainFrame extends javax.swing.JFrame {
     // Calcular el total de productores
     int totalProductores = cantidadProductoresCPU + cantidadProductoresRAM + 
                            cantidadProductoresPlacaBase + cantidadProductoresFuenteAlimentacion +
-                           cantidadProductoresGPU + cantidadEnsamblador;
+                           cantidadProductoresGPU;
 
     // Verificar condiciones
     if (cantidadProductoresCPU < 1 || cantidadProductoresRAM < 1 ||
         cantidadProductoresPlacaBase < 1 || cantidadProductoresFuenteAlimentacion < 1 ||
-        cantidadProductoresGPU < 1 || cantidadEnsamblador < 1) {
+        cantidadProductoresGPU < 1) {
         System.out.println("Error: Cada cantidad de productores y ensambladores debe ser al menos 1.");
         System.exit(1);
     }
@@ -122,15 +127,10 @@ public class MainFrame extends javax.swing.JFrame {
         productorGPU.start();
     }
 
-    // Crear ensambladores
-    for (int i = 0; i < cantidadEnsamblador; i++) {
-        Ensamblador ensamblador = new Ensamblador(almacen, "HP");
-        ensamblador.start();
-    }
 }
     
     // Metodo con el cual se actualiza toda la data del jFrame
-    public void actualizarData(Warehouse almacenHP, Warehouse almacenMSI, int totalCostoAcumuladoHP, int totalCostoAcumuladoMSI, int gananciasHP, int gananciasMSI, String estadoDirectorMSI, String estadoPMMSI, String estadoDirectorHP, String estadoPMHP){
+    public void actualizarData(Warehouse almacenHP, Warehouse almacenMSI, int totalCostoAcumuladoHP, int totalCostoAcumuladoMSI, int gananciasHP, int gananciasMSI, String estadoDirectorMSI, String estadoPMMSI, String estadoDirectorHP, String estadoPMHP, int regPCHP, int premPCHP, int regPCMSI, int premPCMSI){
         //HP
         
         tieneRAMHP.setText(almacenHP.getRAM());
@@ -145,6 +145,8 @@ public class MainFrame extends javax.swing.JFrame {
         maxPlacaHP.setText("/" + almacenHP.getMAXPBase());
         this.estadoDirectorHP.setText(estadoDirectorHP);
         this.estadoPMHP.setText(estadoPMHP);
+        this.tienePCRegularHP.setText(Integer.toString(regPCHP));
+        this.tienePCPremiumHP.setText(Integer.toString(premPCHP));
         //MSI
         tieneRAMMSI.setText(almacenMSI.getRAM());
         tieneCPUMSI.setText(almacenMSI.getCPU());
@@ -158,6 +160,8 @@ public class MainFrame extends javax.swing.JFrame {
         maxPlacaMSI.setText("/" + almacenMSI.getMAXPBase());
         this.estadoDirectorMSI.setText(estadoDirectorMSI);
         this.estadoPMMSI.setText(estadoPMMSI);
+        this.tienePCRegularMSI.setText(Integer.toString(regPCMSI));
+        this.tienePCPremiumMSI1.setText(Integer.toString(premPCMSI));
     }
     
     /**
@@ -173,7 +177,11 @@ public class MainFrame extends javax.swing.JFrame {
         logoMSI = new javax.swing.JLabel();
         panelEnsambladorMSI = new javax.swing.JPanel();
         ENSAMBLADORMSI = new javax.swing.JLabel();
-        jProgressBar3 = new javax.swing.JProgressBar();
+        panelContadorPCMSI = new javax.swing.JPanel();
+        tienePCRegularMSI = new javax.swing.JLabel();
+        panelContadorPremiumPCMSI = new javax.swing.JPanel();
+        tienePCPremiumMSI1 = new javax.swing.JLabel();
+        ENSAMBLADORMSI1 = new javax.swing.JLabel();
         panelGPUMSI = new javax.swing.JPanel();
         GPUMSI = new javax.swing.JLabel();
         panelContadorGPUMSI = new javax.swing.JPanel();
@@ -207,7 +215,11 @@ public class MainFrame extends javax.swing.JFrame {
         logoHP = new javax.swing.JLabel();
         panelEnsambladorHP = new javax.swing.JPanel();
         ENSAMBLADORHP = new javax.swing.JLabel();
-        jProgressBar4 = new javax.swing.JProgressBar();
+        panelContadorPCHP = new javax.swing.JPanel();
+        tienePCRegularHP = new javax.swing.JLabel();
+        panelContadorPremiumPCHP = new javax.swing.JPanel();
+        tienePCPremiumHP = new javax.swing.JLabel();
+        ENSAMBLADORMSI2 = new javax.swing.JLabel();
         panelGPUHP = new javax.swing.JPanel();
         GPUHP = new javax.swing.JLabel();
         panelContadorGPUHP = new javax.swing.JPanel();
@@ -233,17 +245,16 @@ public class MainFrame extends javax.swing.JFrame {
         panelContadorCPUHP = new javax.swing.JPanel();
         maxCPUHP = new javax.swing.JLabel();
         tieneCPUHP = new javax.swing.JLabel();
-        labelDia = new javax.swing.JLabel();
         labelEstadoDirectorHP = new javax.swing.JLabel();
         labelEstadoPMHP = new javax.swing.JLabel();
         estadoDirectorHP = new javax.swing.JLabel();
         estadoPMHP = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
+        labelDia = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("HP VS MSI");
         setLocation(new java.awt.Point(0, 0));
-        setPreferredSize(new java.awt.Dimension(928, 600));
         setResizable(false);
 
         companyPanelMSI.setBackground(new java.awt.Color(102, 102, 102));
@@ -262,28 +273,88 @@ public class MainFrame extends javax.swing.JFrame {
         ENSAMBLADORMSI.setFont(new java.awt.Font("Myanmar Text", 1, 14)); // NOI18N
         ENSAMBLADORMSI.setText("Ensamblador");
 
+        panelContadorPCMSI.setPreferredSize(new java.awt.Dimension(55, 30));
+
+        tienePCRegularMSI.setFont(new java.awt.Font("Nirmala UI", 1, 14)); // NOI18N
+        tienePCRegularMSI.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        tienePCRegularMSI.setText("RAMHP");
+        tienePCRegularMSI.setAlignmentY(0.0F);
+        tienePCRegularMSI.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        tienePCRegularMSI.setMaximumSize(new java.awt.Dimension(25, 30));
+        tienePCRegularMSI.setMinimumSize(new java.awt.Dimension(25, 30));
+        tienePCRegularMSI.setPreferredSize(new java.awt.Dimension(25, 30));
+
+        javax.swing.GroupLayout panelContadorPCMSILayout = new javax.swing.GroupLayout(panelContadorPCMSI);
+        panelContadorPCMSI.setLayout(panelContadorPCMSILayout);
+        panelContadorPCMSILayout.setHorizontalGroup(
+            panelContadorPCMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelContadorPCMSILayout.createSequentialGroup()
+                .addComponent(tienePCRegularMSI, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        panelContadorPCMSILayout.setVerticalGroup(
+            panelContadorPCMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(tienePCRegularMSI, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        panelContadorPremiumPCMSI.setPreferredSize(new java.awt.Dimension(55, 30));
+
+        tienePCPremiumMSI1.setFont(new java.awt.Font("Nirmala UI", 1, 14)); // NOI18N
+        tienePCPremiumMSI1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        tienePCPremiumMSI1.setText("RAMHP");
+        tienePCPremiumMSI1.setAlignmentY(0.0F);
+        tienePCPremiumMSI1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        tienePCPremiumMSI1.setMaximumSize(new java.awt.Dimension(25, 30));
+        tienePCPremiumMSI1.setMinimumSize(new java.awt.Dimension(25, 30));
+        tienePCPremiumMSI1.setPreferredSize(new java.awt.Dimension(25, 30));
+
+        javax.swing.GroupLayout panelContadorPremiumPCMSILayout = new javax.swing.GroupLayout(panelContadorPremiumPCMSI);
+        panelContadorPremiumPCMSI.setLayout(panelContadorPremiumPCMSILayout);
+        panelContadorPremiumPCMSILayout.setHorizontalGroup(
+            panelContadorPremiumPCMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelContadorPremiumPCMSILayout.createSequentialGroup()
+                .addComponent(tienePCPremiumMSI1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        panelContadorPremiumPCMSILayout.setVerticalGroup(
+            panelContadorPremiumPCMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(tienePCPremiumMSI1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        ENSAMBLADORMSI1.setFont(new java.awt.Font("Myanmar Text", 1, 14)); // NOI18N
+        ENSAMBLADORMSI1.setText("  PC Regular          PCPremium");
+
         javax.swing.GroupLayout panelEnsambladorMSILayout = new javax.swing.GroupLayout(panelEnsambladorMSI);
         panelEnsambladorMSI.setLayout(panelEnsambladorMSILayout);
         panelEnsambladorMSILayout.setHorizontalGroup(
             panelEnsambladorMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelEnsambladorMSILayout.createSequentialGroup()
-                .addGroup(panelEnsambladorMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelEnsambladorMSILayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(ENSAMBLADORMSI, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panelEnsambladorMSILayout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addComponent(jProgressBar3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(57, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(ENSAMBLADORMSI, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelEnsambladorMSILayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(ENSAMBLADORMSI1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(18, 18, 18))
+            .addGroup(panelEnsambladorMSILayout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addComponent(panelContadorPCMSI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(panelContadorPremiumPCMSI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29))
         );
         panelEnsambladorMSILayout.setVerticalGroup(
             panelEnsambladorMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelEnsambladorMSILayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(ENSAMBLADORMSI)
-                .addGap(18, 18, 18)
-                .addComponent(jProgressBar3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(34, Short.MAX_VALUE))
+                .addComponent(ENSAMBLADORMSI, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ENSAMBLADORMSI1, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelEnsambladorMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(panelContadorPCMSI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(panelContadorPremiumPCMSI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         panelGPUMSI.setBackground(new java.awt.Color(102, 102, 102));
@@ -669,7 +740,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(panelPBaseMSI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                     .addGroup(companyPanelMSILayout.createSequentialGroup()
-                        .addGap(62, 62, 62)
+                        .addGap(26, 26, 26)
                         .addComponent(labelEstadoDirectorMSI)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(estadoDirectorMSI)
@@ -705,30 +776,87 @@ public class MainFrame extends javax.swing.JFrame {
         ENSAMBLADORHP.setFont(new java.awt.Font("Myanmar Text", 1, 14)); // NOI18N
         ENSAMBLADORHP.setText("Ensamblador");
 
-        jProgressBar4.setValue(50);
+        panelContadorPCHP.setPreferredSize(new java.awt.Dimension(55, 30));
+
+        tienePCRegularHP.setFont(new java.awt.Font("Nirmala UI", 1, 14)); // NOI18N
+        tienePCRegularHP.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        tienePCRegularHP.setText("RAMHP");
+        tienePCRegularHP.setAlignmentY(0.0F);
+        tienePCRegularHP.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        tienePCRegularHP.setMaximumSize(new java.awt.Dimension(25, 30));
+        tienePCRegularHP.setMinimumSize(new java.awt.Dimension(25, 30));
+        tienePCRegularHP.setPreferredSize(new java.awt.Dimension(25, 30));
+
+        javax.swing.GroupLayout panelContadorPCHPLayout = new javax.swing.GroupLayout(panelContadorPCHP);
+        panelContadorPCHP.setLayout(panelContadorPCHPLayout);
+        panelContadorPCHPLayout.setHorizontalGroup(
+            panelContadorPCHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelContadorPCHPLayout.createSequentialGroup()
+                .addComponent(tienePCRegularHP, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        panelContadorPCHPLayout.setVerticalGroup(
+            panelContadorPCHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(tienePCRegularHP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        panelContadorPremiumPCHP.setPreferredSize(new java.awt.Dimension(55, 30));
+
+        tienePCPremiumHP.setFont(new java.awt.Font("Nirmala UI", 1, 14)); // NOI18N
+        tienePCPremiumHP.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        tienePCPremiumHP.setText("RAMHP");
+        tienePCPremiumHP.setAlignmentY(0.0F);
+        tienePCPremiumHP.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        tienePCPremiumHP.setMaximumSize(new java.awt.Dimension(25, 30));
+        tienePCPremiumHP.setMinimumSize(new java.awt.Dimension(25, 30));
+        tienePCPremiumHP.setPreferredSize(new java.awt.Dimension(25, 30));
+
+        javax.swing.GroupLayout panelContadorPremiumPCHPLayout = new javax.swing.GroupLayout(panelContadorPremiumPCHP);
+        panelContadorPremiumPCHP.setLayout(panelContadorPremiumPCHPLayout);
+        panelContadorPremiumPCHPLayout.setHorizontalGroup(
+            panelContadorPremiumPCHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelContadorPremiumPCHPLayout.createSequentialGroup()
+                .addComponent(tienePCPremiumHP, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        panelContadorPremiumPCHPLayout.setVerticalGroup(
+            panelContadorPremiumPCHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(tienePCPremiumHP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        ENSAMBLADORMSI2.setFont(new java.awt.Font("Myanmar Text", 1, 14)); // NOI18N
+        ENSAMBLADORMSI2.setText("  PC Regular          PCPremium");
 
         javax.swing.GroupLayout panelEnsambladorHPLayout = new javax.swing.GroupLayout(panelEnsambladorHP);
         panelEnsambladorHP.setLayout(panelEnsambladorHPLayout);
         panelEnsambladorHPLayout.setHorizontalGroup(
             panelEnsambladorHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelEnsambladorHPLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(panelEnsambladorHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelEnsambladorHPLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(ENSAMBLADORHP, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(ENSAMBLADORHP, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 108, Short.MAX_VALUE))
+                    .addComponent(ENSAMBLADORMSI2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(panelEnsambladorHPLayout.createSequentialGroup()
                         .addGap(18, 18, 18)
-                        .addComponent(jProgressBar4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(53, Short.MAX_VALUE))
+                        .addComponent(panelContadorPCHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(panelContadorPremiumPCHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(11, 11, 11)))
+                .addContainerGap())
         );
         panelEnsambladorHPLayout.setVerticalGroup(
             panelEnsambladorHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelEnsambladorHPLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(ENSAMBLADORHP)
-                .addGap(18, 18, 18)
-                .addComponent(jProgressBar4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(34, Short.MAX_VALUE))
+                .addComponent(ENSAMBLADORHP, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(ENSAMBLADORMSI2, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelEnsambladorHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(panelContadorPCHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(panelContadorPremiumPCHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         panelGPUHP.setBackground(new java.awt.Color(102, 102, 102));
@@ -1053,9 +1181,6 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        labelDia.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
-        labelDia.setText("Dia:");
-
         labelEstadoDirectorHP.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         labelEstadoDirectorHP.setText("El Director está:");
 
@@ -1079,38 +1204,34 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(companyPanelHPLayout.createSequentialGroup()
                         .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(companyPanelHPLayout.createSequentialGroup()
-                                .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(panelCPUHP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(panelPBaseHP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(32, 32, 32)
-                                .addComponent(labelEstadoPMHP, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, companyPanelHPLayout.createSequentialGroup()
-                                    .addComponent(panelGPUHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(panelEnsambladorHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, companyPanelHPLayout.createSequentialGroup()
-                                    .addComponent(panelRAMHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(panelPSupplyHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addContainerGap())
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, companyPanelHPLayout.createSequentialGroup()
+                                .addComponent(panelGPUHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(panelEnsambladorHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, companyPanelHPLayout.createSequentialGroup()
+                                .addComponent(panelRAMHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(panelPSupplyHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(companyPanelHPLayout.createSequentialGroup()
-                        .addGap(29, 29, 29)
-                        .addComponent(logoHP, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(panelCPUHP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(panelPBaseHP, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(companyPanelHPLayout.createSequentialGroup()
+                                .addGap(29, 29, 29)
+                                .addComponent(logoHP, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, companyPanelHPLayout.createSequentialGroup()
-                                .addComponent(labelDia, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(141, 141, 141))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, companyPanelHPLayout.createSequentialGroup()
-                                .addComponent(labelEstadoDirectorHP, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(35, 35, 35))
-                            .addGroup(companyPanelHPLayout.createSequentialGroup()
+                            .addComponent(labelEstadoPMHP, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, companyPanelHPLayout.createSequentialGroup()
+                                    .addComponent(labelEstadoDirectorHP, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(17, 17, 17))
                                 .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(estadoDirectorHP, javax.swing.GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
-                                    .addComponent(estadoPMHP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addContainerGap())))))
+                                    .addComponent(estadoDirectorHP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(estadoPMHP, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(23, 23, 23))))
         );
         companyPanelHPLayout.setVerticalGroup(
             companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1121,13 +1242,9 @@ public class MainFrame extends javax.swing.JFrame {
                         .addComponent(logoHP)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(panelPBaseHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(panelCPUHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                     .addGroup(companyPanelHPLayout.createSequentialGroup()
-                        .addGap(19, 19, 19)
-                        .addComponent(labelDia)
-                        .addGap(18, 18, 18)
+                        .addGap(24, 24, 24)
                         .addComponent(labelEstadoDirectorHP)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(estadoDirectorHP)
@@ -1136,6 +1253,8 @@ public class MainFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(estadoPMHP)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addComponent(panelCPUHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(companyPanelHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panelPSupplyHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(panelRAMHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -1148,15 +1267,21 @@ public class MainFrame extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(102, 102, 102));
         jPanel1.setPreferredSize(new java.awt.Dimension(920, 30));
 
+        labelDia.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
+        labelDia.setText("Dia:");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 902, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(773, Short.MAX_VALUE)
+                .addComponent(labelDia, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(92, 92, 92))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 30, Short.MAX_VALUE)
+            .addComponent(labelDia, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -1172,7 +1297,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 902, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1182,7 +1307,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(companyPanelMSI, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(44, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -1230,6 +1355,8 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel CPUMSI;
     private javax.swing.JLabel ENSAMBLADORHP;
     private javax.swing.JLabel ENSAMBLADORMSI;
+    private javax.swing.JLabel ENSAMBLADORMSI1;
+    private javax.swing.JLabel ENSAMBLADORMSI2;
     private javax.swing.JLabel GPUHP;
     private javax.swing.JLabel GPUMSI;
     private javax.swing.JLabel PlacaHP;
@@ -1243,8 +1370,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel estadoPMHP;
     private javax.swing.JLabel estadoPMMSI;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JProgressBar jProgressBar3;
-    private javax.swing.JProgressBar jProgressBar4;
     private javax.swing.JLabel labelDia;
     private javax.swing.JLabel labelEstadoDirectorHP;
     private javax.swing.JLabel labelEstadoDirectorMSI;
@@ -1270,8 +1395,12 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel panelContadorCPUMSI;
     private javax.swing.JPanel panelContadorGPUHP;
     private javax.swing.JPanel panelContadorGPUMSI;
+    private javax.swing.JPanel panelContadorPCHP;
+    private javax.swing.JPanel panelContadorPCMSI;
     private javax.swing.JPanel panelContadorPlacaHP;
     private javax.swing.JPanel panelContadorPlacaMSI;
+    private javax.swing.JPanel panelContadorPremiumPCHP;
+    private javax.swing.JPanel panelContadorPremiumPCMSI;
     private javax.swing.JPanel panelContadorRAMHP;
     private javax.swing.JPanel panelContadorRAMMSI;
     private javax.swing.JPanel panelEnsambladorHP;
@@ -1288,6 +1417,10 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel tieneCPUMSI;
     private javax.swing.JLabel tieneGPUHP;
     private javax.swing.JLabel tieneGPUMSI;
+    private javax.swing.JLabel tienePCPremiumHP;
+    private javax.swing.JLabel tienePCPremiumMSI1;
+    private javax.swing.JLabel tienePCRegularHP;
+    private javax.swing.JLabel tienePCRegularMSI;
     private javax.swing.JLabel tienePSupplyHP;
     private javax.swing.JLabel tienePSupplyMSI;
     private javax.swing.JLabel tienePlacaHP;
