@@ -131,43 +131,53 @@ public class Warehouse {
         System.out.println("====================================");
     }
     
-    // Mùtodo para retornar la cantidad de RAM que tiene el Warehouse al momento
+    // Método para retornar la cantidad de RAM que tiene el Warehouse al momento
     public String getRAM(){
         return Integer.toString(this.cantidadRAM);
     }
     
-    // Mùtodo para retornar la cantidad de CPU que tiene el Warehouse al momento
+    // Método para retornar la cantidad de CPU que tiene el Warehouse al momento
     public String getCPU(){
         return Integer.toString(this.cantidadCPU);
     }
     
-    // Mùtodo para retornar la cantidad de Fuentes de Alimentación que tiene el Warehouse al momento
+    // Método para retornar la cantidad de Fuentes de Alimentación que tiene el Warehouse al momento
     public String getPSupply(){
         return Integer.toString(this.cantidadFuenteAlimentacion);
     }
     
-    // Mùtodo para retornar la cantidad de Placas Base que tiene el Warehouse al momento
+    // Método para retornar la cantidad de Placas Base que tiene el Warehouse al momento
     public String getPBase(){
         return Integer.toString(this.cantidadPlacaBase);
     }
     
-    // Mùtodo para retornar la cantidad MAXIMA de RAM que tiene el Warehouse al momento
+    // Método para retornar la cantidad de GPUs que tiene el Warehouse al momento
+    public String getGPU(){
+        return Integer.toString(this.cantidadGPU);
+    }
+    
+    // Método para retornar la cantidad MAXIMA de RAM que puede tener el Warehouse
     public String getMAXRAM(){
         return Integer.toString(this.capacidadMaximaRAM);
     }
     
-    // Mùtodo para retornar la cantidad MAXIMA de CPU que tiene el Warehouse al momento
+    // Método para retornar la cantidad MAXIMA de CPU que puede tener el Warehouse
     public String getMAXCPU(){
         return Integer.toString(this.capacidadMaximaCPU);
     }
     
-    // Mùtodo para retornar la cantidad MAXIMA de Fuentes de Alimentación que tiene el Warehouse al momento
+    // Método para retornar la cantidad MAXIMA de Fuentes de Alimentación que puede tener el Warehouse
     public String getMAXPSupply(){
         return Integer.toString(this.capacidadMaximaFuenteAlimentacion);
     }
     
-    // Mùtodo para retornar la cantidad MAXIMA de Placas Base que tiene el Warehouse al momento
+    // Método para retornar la cantidad MAXIMA de Placas Base que puede tener el Warehouse
     public String getMAXPBase(){
         return Integer.toString(this.capacidadMaximaPlacaBase);
+    }
+    
+    // Método para retornar la cantidad MAXIMA de GPUs que puede tener el Warehouse
+    public String getMAXGPU(){
+        return Integer.toString(this.capacidadMaximaGPU);
     }
 }

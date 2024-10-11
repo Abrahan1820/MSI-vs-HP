@@ -15,21 +15,93 @@ public class MainFrame extends javax.swing.JFrame {
     public MainFrame() {
         initComponents();
         setLocationRelativeTo(null);
+        
         Warehouse almacenHP = new Warehouse(20,55,25,35);
         Warehouse almacenMSI = new Warehouse(20,55,25,35);
-        actualizarData(almacenHP, almacenMSI);
+        
+        // Crear productores
+        ProductorCPU productorCPUHP = new ProductorCPU(almacenHP, 72 * 1000, 26.0); // Produce 1 cada 72 horas, salario por hora: 26.0
+        ProductorRAM productorRAMHP = new ProductorRAM(almacenHP, 12 * 1000, 40.0); // Produce 1 cada 12 horas, salario por hora: 40.0
+        ProductorPlacaBase productorPlacaBaseHP = new ProductorPlacaBase(almacenHP, 72 * 1000, 20.0); // Produce 1 cada 72 horas, salario por hora: 20.0
+        ProductorFuenteAlimentacion productorFuenteAlimentacionHP = new ProductorFuenteAlimentacion(almacenHP, (24 / 3) * 1000, 16.0); // Produce 1 cada 8 horas (3 por día), salario por hora: 16.0
+        ProductorGPU productorGPUHP = new ProductorGPU(almacenHP, 72 * 1000, 34.0); // Produce 1 cada 3 díaS, salario por hora: 34.0
+       
+        ProductorCPU productorCPUMSI = new ProductorCPU(almacenMSI, 72 * 1000, 26.0); // Produce 1 cada 72 horas, salario por hora: 26.0
+        ProductorRAM productorRAMMSI = new ProductorRAM(almacenMSI, 12 * 1000, 40.0); // Produce 1 cada 12 horas, salario por hora: 40.0
+        ProductorPlacaBase productorPlacaBaseMSI = new ProductorPlacaBase(almacenMSI, 72 * 1000, 20.0); // Produce 1 cada 72 horas, salario por hora: 20.0
+        ProductorFuenteAlimentacion productorFuenteAlimentacionMSI = new ProductorFuenteAlimentacion(almacenMSI, (24 / 3) * 1000, 16.0); // Produce 1 cada 8 horas (3 por día), salario por hora: 16.0
+        ProductorGPU productorGPUMSI = new ProductorGPU(almacenMSI, 72 * 1000, 34.0); // Produce 1 cada 3 díaS, salario por hora: 34.0
+
+        // Crear ensambladores (HP y MSI)
+        Ensamblador ensambladorHP = new Ensamblador(almacenHP, "HP");
+        Ensamblador ensambladorMSI = new Ensamblador(almacenMSI, "MSI");
+       
+        // Iniciar los hilos de los productores y ensambladores. Por ahora, hay 1 por cada area de cada almacen
+        productorCPUHP.start();
+        productorRAMHP.start();
+        productorPlacaBaseHP.start();
+        productorFuenteAlimentacionHP.start();
+        productorGPUHP.start();
+        ensambladorHP.start();
+        
+        productorCPUMSI.start();
+        productorRAMMSI.start();
+        productorPlacaBaseMSI.start();
+        productorFuenteAlimentacionMSI.start();
+        productorGPUMSI.start();
+        ensambladorMSI.start();
         
         
+        //Updater thread. Completar con los acumulados
+        int costosHP = 0;
+        int costosMSI = 0;
+        int gananciasHP = 0;
+        int gananciasMSI = 0;
+        Updater actualizador = new Updater(this, almacenHP, almacenMSI, costosHP, costosMSI, gananciasHP, gananciasMSI);
+        actualizador.start();
+        
+        // Simular por un periodo de tiempo
+        try {
+            Thread.sleep(10000); // Simular por X segundos (ajustar según sea necesario)
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        // Mostrar los recursos actuales en el almacén
+        System.out.println("------- RECURSOS HP -------");
+        almacenHP.mostrarRecursos();
+        System.out.println("------- RECURSOS MSI -------");
+        almacenMSI.mostrarRecursos();
+
+        // Imprimir el salario total acumulado de los productores y ensambladores
+        System.out.println("------- PAGOS HP -------");
+        System.out.println("Salario total Productor CPU: " + productorCPUHP.getSalarioTotal());
+        System.out.println("Salario total Productor RAM: " + productorRAMHP.getSalarioTotal());
+        System.out.println("Salario total Productor Placa Base: " + productorPlacaBaseHP.getSalarioTotal());
+        System.out.println("Salario total Productor Fuente Alimentación: " + productorFuenteAlimentacionHP.getSalarioTotal());
+        System.out.println("Salario total Productor GPU: " + productorGPUHP.getSalarioTotal());
+        System.out.println("Salario total Ensamblador HP: " + ensambladorHP.getSalarioTotal());
+        System.out.println("");
+        System.out.println("------- PAGOS HP -------");
+        System.out.println("Salario total Productor CPU: " + productorCPUMSI.getSalarioTotal());
+        System.out.println("Salario total Productor RAM: " + productorRAMMSI.getSalarioTotal());
+        System.out.println("Salario total Productor Placa Base: " + productorPlacaBaseMSI.getSalarioTotal());
+        System.out.println("Salario total Productor Fuente Alimentación: " + productorFuenteAlimentacionMSI.getSalarioTotal());
+        System.out.println("Salario total Productor GPU: " + productorGPUMSI.getSalarioTotal());
+        System.out.println("Salario total Ensamblador HP: " + ensambladorMSI.getSalarioTotal());
         
     }
     
     
-    public void actualizarData(Warehouse almacenHP, Warehouse almacenMSI){
+    // Metodo con el cual se actualiza toda la data del jFrame
+    public void actualizarData(Warehouse almacenHP, Warehouse almacenMSI, int totalCostoAcumuladoHP, int totalCostoAcumuladoMSI, int gananciasHP, int gananciasMSI){
         //HP
         tieneRAMHP.setText(almacenHP.getRAM());
         tieneCPUHP.setText(almacenHP.getCPU());
         tienePlacaHP.setText(almacenHP.getPBase());
         tienePSupplyHP.setText(almacenHP.getPSupply());
+        tieneGPUHP.setText(almacenHP.getGPU());
+        maxGPUHP.setText(almacenHP.getMAXGPU());
         maxCPUHP.setText("/" + almacenHP.getMAXCPU());
         maxPSupplyHP.setText("/" + almacenHP.getMAXPSupply());
         maxRAMHP.setText("/" + almacenHP.getMAXRAM());
@@ -39,12 +111,14 @@ public class MainFrame extends javax.swing.JFrame {
         tieneCPUMSI.setText(almacenMSI.getCPU());
         tienePlacaMSI.setText(almacenMSI.getPBase());
         tienePSupplyMSI.setText(almacenMSI.getPSupply());
+        tieneGPUMSI.setText(almacenMSI.getGPU());
+        maxGPUMSI.setText("/" + almacenMSI.getMAXGPU());
         maxCPUMSI.setText("/" + almacenMSI.getMAXCPU());
         maxPSupplyMSI.setText("/" + almacenMSI.getMAXPSupply());
         maxRAMMSI.setText("/" + almacenMSI.getMAXRAM());
         maxPlacaMSI.setText("/" + almacenMSI.getMAXPBase());
     }
-
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -60,8 +134,10 @@ public class MainFrame extends javax.swing.JFrame {
         ENSAMBLADORMSI = new javax.swing.JLabel();
         jProgressBar3 = new javax.swing.JProgressBar();
         panelGPUMSI = new javax.swing.JPanel();
-        panelContadorGPUMSI = new javax.swing.JPanel();
         GPUMSI = new javax.swing.JLabel();
+        panelContadorGPUMSI = new javax.swing.JPanel();
+        maxGPUMSI = new javax.swing.JLabel();
+        tieneGPUMSI = new javax.swing.JLabel();
         panelRAMMSI = new javax.swing.JPanel();
         RAMMSI = new javax.swing.JLabel();
         panelContadorRAMMSI = new javax.swing.JPanel();
@@ -88,8 +164,10 @@ public class MainFrame extends javax.swing.JFrame {
         ENSAMBLADORHP = new javax.swing.JLabel();
         jProgressBar4 = new javax.swing.JProgressBar();
         panelGPUHP = new javax.swing.JPanel();
-        panelContadorGPUHP = new javax.swing.JPanel();
         GPUHP = new javax.swing.JLabel();
+        panelContadorGPUHP = new javax.swing.JPanel();
+        maxGPUHP = new javax.swing.JLabel();
+        tieneGPUHP = new javax.swing.JLabel();
         panelRAMHP = new javax.swing.JPanel();
         RAMHP = new javax.swing.JLabel();
         panelContadorRAMHP = new javax.swing.JPanel();
@@ -162,34 +240,54 @@ public class MainFrame extends javax.swing.JFrame {
         panelGPUMSI.setForeground(new java.awt.Color(102, 102, 102));
         panelGPUMSI.setPreferredSize(new java.awt.Dimension(221, 94));
 
+        GPUMSI.setFont(new java.awt.Font("Myanmar Text", 1, 14)); // NOI18N
+        GPUMSI.setText("GPU");
+
         panelContadorGPUMSI.setPreferredSize(new java.awt.Dimension(55, 30));
+
+        maxGPUMSI.setFont(new java.awt.Font("Nirmala UI", 1, 14)); // NOI18N
+        maxGPUMSI.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        maxGPUMSI.setText("/ 1");
+        maxGPUMSI.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        maxGPUMSI.setPreferredSize(new java.awt.Dimension(30, 30));
+
+        tieneGPUMSI.setFont(new java.awt.Font("Nirmala UI", 1, 14)); // NOI18N
+        tieneGPUMSI.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        tieneGPUMSI.setText("CPUHP");
+        tieneGPUMSI.setMaximumSize(new java.awt.Dimension(25, 30));
+        tieneGPUMSI.setMinimumSize(new java.awt.Dimension(25, 30));
+        tieneGPUMSI.setPreferredSize(new java.awt.Dimension(25, 30));
 
         javax.swing.GroupLayout panelContadorGPUMSILayout = new javax.swing.GroupLayout(panelContadorGPUMSI);
         panelContadorGPUMSI.setLayout(panelContadorGPUMSILayout);
         panelContadorGPUMSILayout.setHorizontalGroup(
             panelContadorGPUMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 55, Short.MAX_VALUE)
+            .addGroup(panelContadorGPUMSILayout.createSequentialGroup()
+                .addComponent(tieneGPUMSI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(maxGPUMSI, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelContadorGPUMSILayout.setVerticalGroup(
             panelContadorGPUMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 30, Short.MAX_VALUE)
+            .addComponent(maxGPUMSI, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(panelContadorGPUMSILayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(tieneGPUMSI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
-
-        GPUMSI.setFont(new java.awt.Font("Myanmar Text", 1, 14)); // NOI18N
-        GPUMSI.setText("GPU");
 
         javax.swing.GroupLayout panelGPUMSILayout = new javax.swing.GroupLayout(panelGPUMSI);
         panelGPUMSI.setLayout(panelGPUMSILayout);
         panelGPUMSILayout.setHorizontalGroup(
             panelGPUMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelGPUMSILayout.createSequentialGroup()
-                .addContainerGap(156, Short.MAX_VALUE)
-                .addComponent(panelContadorGPUMSI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
             .addGroup(panelGPUMSILayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(GPUMSI, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(174, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelGPUMSILayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(panelContadorGPUMSI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         panelGPUMSILayout.setVerticalGroup(
             panelGPUMSILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -489,7 +587,7 @@ public class MainFrame extends javax.swing.JFrame {
             .addGroup(companyPanelMSILayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(logoMSI)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(panelPBaseMSI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelCPUMSI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -550,21 +648,41 @@ public class MainFrame extends javax.swing.JFrame {
         panelGPUHP.setForeground(new java.awt.Color(102, 102, 102));
         panelGPUHP.setPreferredSize(new java.awt.Dimension(221, 94));
 
+        GPUHP.setFont(new java.awt.Font("Myanmar Text", 1, 14)); // NOI18N
+        GPUHP.setText("GPU");
+
         panelContadorGPUHP.setPreferredSize(new java.awt.Dimension(55, 30));
+
+        maxGPUHP.setFont(new java.awt.Font("Nirmala UI", 1, 14)); // NOI18N
+        maxGPUHP.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        maxGPUHP.setText("/ 1");
+        maxGPUHP.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        maxGPUHP.setPreferredSize(new java.awt.Dimension(30, 30));
+
+        tieneGPUHP.setFont(new java.awt.Font("Nirmala UI", 1, 14)); // NOI18N
+        tieneGPUHP.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        tieneGPUHP.setText("CPUHP");
+        tieneGPUHP.setMaximumSize(new java.awt.Dimension(25, 30));
+        tieneGPUHP.setMinimumSize(new java.awt.Dimension(25, 30));
+        tieneGPUHP.setPreferredSize(new java.awt.Dimension(25, 30));
 
         javax.swing.GroupLayout panelContadorGPUHPLayout = new javax.swing.GroupLayout(panelContadorGPUHP);
         panelContadorGPUHP.setLayout(panelContadorGPUHPLayout);
         panelContadorGPUHPLayout.setHorizontalGroup(
             panelContadorGPUHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 55, Short.MAX_VALUE)
+            .addGroup(panelContadorGPUHPLayout.createSequentialGroup()
+                .addComponent(tieneGPUHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(maxGPUHP, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelContadorGPUHPLayout.setVerticalGroup(
             panelContadorGPUHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 30, Short.MAX_VALUE)
+            .addComponent(maxGPUHP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(panelContadorGPUHPLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(tieneGPUHP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
-
-        GPUHP.setFont(new java.awt.Font("Myanmar Text", 1, 14)); // NOI18N
-        GPUHP.setText("GPU");
 
         javax.swing.GroupLayout panelGPUHPLayout = new javax.swing.GroupLayout(panelGPUHP);
         panelGPUHP.setLayout(panelGPUHPLayout);
@@ -626,8 +744,8 @@ public class MainFrame extends javax.swing.JFrame {
         );
         panelContadorRAMHPLayout.setVerticalGroup(
             panelContadorRAMHPLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(maxRAMHP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(tieneRAMHP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(maxRAMHP, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout panelRAMHPLayout = new javax.swing.GroupLayout(panelRAMHP);
@@ -958,21 +1076,19 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel RAMMSI;
     private javax.swing.JPanel companyPanelHP;
     private javax.swing.JPanel companyPanelMSI;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JProgressBar jProgressBar3;
     private javax.swing.JProgressBar jProgressBar4;
     private javax.swing.JLabel logoHP;
     private javax.swing.JLabel logoMSI;
     private javax.swing.JLabel maxCPUHP;
     private javax.swing.JLabel maxCPUMSI;
+    private javax.swing.JLabel maxGPUHP;
+    private javax.swing.JLabel maxGPUMSI;
     private javax.swing.JLabel maxPSupplyHP;
     private javax.swing.JLabel maxPSupplyMSI;
     private javax.swing.JLabel maxPlacaHP;
     private javax.swing.JLabel maxPlacaMSI;
     private javax.swing.JLabel maxRAMHP;
-    private javax.swing.JLabel maxRAMHP1;
-    private javax.swing.JLabel maxRAMHP2;
     private javax.swing.JLabel maxRAMMSI;
     private javax.swing.JPanel panelCPUHP;
     private javax.swing.JPanel panelCPUMSI;
@@ -985,8 +1101,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel panelContadorPlacaHP;
     private javax.swing.JPanel panelContadorPlacaMSI;
     private javax.swing.JPanel panelContadorRAMHP;
-    private javax.swing.JPanel panelContadorRAMHP2;
-    private javax.swing.JPanel panelContadorRAMHP3;
     private javax.swing.JPanel panelContadorRAMMSI;
     private javax.swing.JPanel panelEnsambladorHP;
     private javax.swing.JPanel panelEnsambladorMSI;
@@ -1000,13 +1114,13 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel panelRAMMSI;
     private javax.swing.JLabel tieneCPUHP;
     private javax.swing.JLabel tieneCPUMSI;
+    private javax.swing.JLabel tieneGPUHP;
+    private javax.swing.JLabel tieneGPUMSI;
     private javax.swing.JLabel tienePSupplyHP;
     private javax.swing.JLabel tienePSupplyMSI;
     private javax.swing.JLabel tienePlacaHP;
     private javax.swing.JLabel tienePlacaMSI;
     private javax.swing.JLabel tieneRAMHP;
-    private javax.swing.JLabel tieneRAMHP1;
-    private javax.swing.JLabel tieneRAMHP2;
     private javax.swing.JLabel tieneRAMMSI;
     // End of variables declaration//GEN-END:variables
 }
